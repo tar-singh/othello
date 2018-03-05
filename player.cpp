@@ -11,6 +11,12 @@ Player::Player(Side side) {
     this->side = side;
 
     /*Board * B = new Board();
+
+    Board * board = new Board();
+
+    /*
+    this->side = side;
+
     Move a = Move(3, 3);
     Move b = Move(3, 4);
     Move c = Move(4, 3);
@@ -19,7 +25,10 @@ Player::Player(Side side) {
     B->doMove(&a, WHITE);
     B->doMove(&b, BLACK);
     B->doMove(&c, BLACK);
-    B->doMove(&d, WHITE);*/
+    B->doMove(&d, WHITE);
+
+    */
+
     /*
      * TODO: Do any initialization you need to do here (setting up the board,
      * precalculating things, etc.) However, remember that you will only have
@@ -31,6 +40,7 @@ Player::Player(Side side) {
  * Destructor for the player.
  */
 Player::~Player() {
+
 }
 
 /*
@@ -46,6 +56,17 @@ Player::~Player() {
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
  */
+
+
+/*
+Move *Player::chooseMove() {
+    if Board::hasmoves(for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if Board::
+        }
+    }
+*/
+
 
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * m = new Move(0, 0);
