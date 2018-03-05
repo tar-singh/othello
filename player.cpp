@@ -8,19 +8,18 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
+    this->side = side;
 
     Board b = Board();
-    Move a0 = Move(3, 3);
-    Move b0 = Move(3, 4);
-    Move c0 = Move(4, 3);
-    Move d0 = Move(4, 4);
-    Side white = Side::WHITE;
-    Side black = Side::BLACK;
+    Move a = Move(3, 3);
+    Move b = Move(3, 4);
+    Move c = Move(4, 3);
+    Move d = Move(4, 4);
 
-    b.doMove(&a0, white);
-    b.doMove(&b0, black);
-    b.doMove(&c0, black);
-    b.doMove(&d0, white);
+    b.doMove(&a0, WHITE);
+    b.doMove(&b0, BLACK);
+    b.doMove(&c0, BLACK);
+    b.doMove(&d0, WHITE);
     /*
      * TODO: Do any initialization you need to do here (setting up the board,
      * precalculating things, etc.) However, remember that you will only have
@@ -48,12 +47,13 @@ Player::~Player() {
  * return nullptr.
  */
 
-Move *Player::chooseMove() {
-    if Board::hasmoves(for (int i = 0; i < 8; i++){
+/*Move *Player::chooseMove() {
+    if (Board::hasmoves(for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if Board::
         }
-    }
+    }*/
+
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     
     return nullptr;
