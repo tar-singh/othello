@@ -8,7 +8,7 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
-    this->side = side;
+    Board * B = new Board();
 
     /*Board * B = new Board();
 
@@ -68,7 +68,7 @@ Move *Player::chooseMove() {
 */
 
 
-Move *Player::doMove(Move *opponentsMove, int msLeft) {
+Move *Player::doMove(Move *opponentsMove, int msLeft, Side side) {
     Move * m = new Move(0, 0);
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){

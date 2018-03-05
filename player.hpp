@@ -9,11 +9,11 @@ using namespace std;
 class Player {
 
 public:
-	Side side;
+	Board * B = new Board();
     Player(Side side);
     ~Player();
 
-    Move *doMove(Move *opponentsMove, int msLeft);
+    Move *doMove(Move *opponentsMove, int msLeft, Side side);
 
 
     // Flag to tell if the player is running within the test_minimax context
