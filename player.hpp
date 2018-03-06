@@ -18,6 +18,7 @@ public:
     Move *randomMove(int msLeft);
     Move *minimaxChooseMove(int msLeft);
     vector<Move*> listMoves(Board * board);
+    Move *basicHeuristicMove(Side side, int msLeft);
 
 
     // Flag to tell if the player is running within the test_minimax context

@@ -63,6 +63,7 @@ Move *Player::randomMove(int msLeft) {
 Move *Player::basicHeuristicMove(Side side, int msLeft) {
     Move * m = new Move(0, 0);
     Move * move = new Move(0, 0);
+    bool validMove = false;
     int temp;
     int total = 0;
     if (B->hasMoves(side)){
@@ -76,13 +77,18 @@ Move *Player::basicHeuristicMove(Side side, int msLeft) {
                     {
                         total = temp;
                         *move = Move(i, j);
+                        validMove = true;
                     }
                 }
             }
         }
+    }
+
+    if (validMove) {
         B->doMove(move, side);
         return move;
     }
+
 
     delete m;
     delete move;
@@ -103,7 +109,7 @@ vector<Move*> Player::listMoves(Board * board) {
     }
     return movesList;
 }
-
+/*
 Move *Player::minimaxChooseMove(int msLeft) {
     //make tree with nodes with tons of prob unnecessary stuff
     int totalScore = 0;
@@ -158,6 +164,7 @@ Move *Player::minimaxChooseMove(int msLeft) {
     return bestMove;
 }
 
+*/
 
 
 /*
