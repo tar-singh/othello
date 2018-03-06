@@ -58,6 +58,9 @@ Move *Player::randomMove(int msLeft) {
     return nullptr;
 }
 
+Move *Player::minimaxChooseMove(int msLeft) {
+    
+}
 /*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,

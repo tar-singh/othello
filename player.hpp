@@ -15,6 +15,7 @@ public:
 
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *randomMove(int msLeft);
+    Move *minimaxChooseMove(int msLeft);
 
 
     // Flag to tell if the player is running within the test_minimax context
