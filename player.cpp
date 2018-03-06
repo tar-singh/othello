@@ -11,6 +11,7 @@ Player::Player(Side side) {
 
     this->side = side;
     Board * B = new Board();
+    this->B = B;
 
     Move a = Move(3, 3);
     Move b = Move(3, 4);
