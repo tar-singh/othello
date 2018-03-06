@@ -82,8 +82,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
 
     //do and return random move
-    //but it doesn't work lmao
-    return chooseMove(msLeft);
+    return randomMove(msLeft);
 }
 
 
