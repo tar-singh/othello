@@ -60,6 +60,34 @@ Move *Player::randomMove(int msLeft) {
     return nullptr;
 }
 
+Move *Player::basicHeuristicMove(int msLeft) {
+    Move * m = new Move(0, 0);
+    Move * move = new Move(0, 0);
+    int temp;
+    int total = 0;
+    if (B->hasMoves(side)){
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                *m = Move(i, j);
+                if (B->checkMove(m, side)){
+                    // std::this_thread::sleep_for(std::chrono::seconds(5));
+                    temp = B->score(m, side);
+                    if (temp > total)
+                    {
+                        total = temp;
+                        *move = Move(i, j);
+                    }
+                }
+            }
+        }
+        B->doMove(move, side);
+        return move;
+    }
+    delete m;
+    delete move;
+    return nullptr;    
+}
+
 vector<Move*> Player::listMoves(Board * board) {
     vector<Move*> movesList;
     if (board->hasMoves(side)) {
@@ -146,11 +174,7 @@ Move *Player::minimaxChooseMove(int msLeft) {
  * 
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    Move * m = new Move(0, 0);
-    Move * move = new Move(0, 0);
     Side other;
-    int temp;
-    int total = 0;
 
     //record opponents move
     if (side == BLACK){
@@ -163,32 +187,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         B->doMove(opponentsMove, other);
     }
 
-    if (B->hasMoves(side)){
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                *m = Move(i, j);
-                if (B->checkMove(m, side)){
-                    // std::this_thread::sleep_for(std::chrono::seconds(5));
-                    std::cerr << "i: " << i << std::endl;
-                    std::cerr << "j: " << j << std::endl;
-                    std::cerr << "help" << std::endl;
-                    temp = B->score(m, side);
-                    if (temp > total)
-                    {
-                        total = temp;
-                        *move = Move(i, j);
-                    }
-                }
-            }
-        }
-    }
-
-    B->doMove(move, side);
-    return move;
-
-
-    delete m;
-    delete move;
-    return nullptr;
+    return basicHeuristicMove(msLeft);
+   
+    // do and return random move
+    // return randomMove(msLeft);
 }
 
