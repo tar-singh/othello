@@ -50,10 +50,24 @@ Player::~Player() {
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
  */
-
+Move *Player::randomMove(int msLeft) {
+    Move * m = new Move(0, 0);
+    if (B->hasMoves(side)) {
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                *m = Move(i, j);
+                if (B->checkMove(m, side)){
+                    B->doMove(m, side);
+                    return m;
+                }
+            }
+        }
+    }
+    delete m;
+    return nullptr;
+}
 
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    Move * m = new Move(0, 0);
     Side other;
 
     //record opponents move
@@ -69,19 +83,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
     //do and return random move
     //but it doesn't work lmao
-    if (B->hasMoves(side)){
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                *m = Move(i, j);
-                if (B->checkMove(m, side)){
-                    B->doMove(m, side);
-                    return m;
-                }
-            }
-        }
-    }
-    delete m;
-    return nullptr;
+    return chooseMove(msLeft);
 }
 
 
