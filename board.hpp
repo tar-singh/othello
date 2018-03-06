@@ -33,4 +33,5 @@ public:
     int score(Move *m, Side side);
 };
 
+
 #endif
