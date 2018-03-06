@@ -68,7 +68,7 @@ Move *Player::chooseMove() {
 */
 
 
-Move *Player::doMove(Move *opponentsMove, int msLeft, Side side) {
+Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * m = new Move(0, 0);
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
