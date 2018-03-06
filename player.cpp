@@ -58,8 +58,28 @@ Move *Player::randomMove(int msLeft) {
     return nullptr;
 }
 
+vector<*Move> Player::listMoves() {
+    vector<*Move> movesList;
+    if (B->hasMoves(side)) {
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                *m = Move(i, j);
+                if (B->checkMove(m, side)){
+                    movesList.push(m);
+                }
+            }
+        }
+    }
+    return movesList;
+}
+
 Move *Player::minimaxChooseMove(int msLeft) {
-    
+    vector<*Move> movesList = listMoves();
+    for (int i = 0; i < movesList.size(); i++)
+    {
+        Move *m = new Move(0, 0);
+        
+    }
 }
 /*
  * Compute the next move given the opponent's last move. Your AI is

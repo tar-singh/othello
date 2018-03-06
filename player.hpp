@@ -2,6 +2,7 @@
 #define __PLAYER_H__
 
 #include <iostream>
+#include <vector>
 #include "common.hpp"
 #include "board.hpp"
 using namespace std;
@@ -16,6 +17,7 @@ public:
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *randomMove(int msLeft);
     Move *minimaxChooseMove(int msLeft);
+    vector<*Move> listMoves();
 
 
     // Flag to tell if the player is running within the test_minimax context
