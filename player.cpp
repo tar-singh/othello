@@ -9,14 +9,13 @@ Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 
-    Board * B = new Board();
-    this->B = B;
     this->side = side;
+    Board * B = new Board();
 
-    Move a = Move(4, 4);
-    Move b = Move(4, 5);
-    Move c = Move(5, 4);
-    Move d = Move(5, 5);
+    Move a = Move(3, 3);
+    Move b = Move(3, 4);
+    Move c = Move(4, 3);
+    Move d = Move(4, 4);
 
     B->doMove(&a, WHITE);
     B->doMove(&b, BLACK);
