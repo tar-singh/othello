@@ -55,25 +55,27 @@ Player::~Player() {
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * m = new Move(0, 0);
     Side other;
+    int count;
 
     //record opponents move
     if (side == BLACK){
         other = WHITE;
+        count = B->countBlack();
     }
     else if (side == WHITE){
         other = BLACK;
+        count = B->countWhite();
     }
     if (opponentsMove != nullptr){
         B->doMove(opponentsMove, other);
     }
 
-    //do and return random move
-    //but it doesn't work lmao
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
+                    //
                     B->doMove(m, side);
                     return m;
                 }
@@ -83,5 +85,4 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     delete m;
     return nullptr;
 }
-
 
