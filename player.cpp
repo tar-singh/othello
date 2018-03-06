@@ -13,10 +13,10 @@ Player::Player(Side side) {
     this->B = B;
     this->side = side;
 
-    Move a = Move(3, 3);
-    Move b = Move(3, 4);
-    Move c = Move(4, 3);
-    Move d = Move(4, 4);
+    Move a = Move(4, 4);
+    Move b = Move(4, 5);
+    Move c = Move(5, 4);
+    Move d = Move(5, 5);
 
     B->doMove(&a, WHITE);
     B->doMove(&b, BLACK);
@@ -34,7 +34,7 @@ Player::Player(Side side) {
  * Destructor for the player.
  */
 Player::~Player() {
-
+    delete B;
 }
 
 /*
@@ -55,6 +55,8 @@ Player::~Player() {
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * m = new Move(0, 0);
     Side other;
+
+    //record opponents move
     if (side == BLACK){
         other = WHITE;
     }
@@ -64,9 +66,12 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (opponentsMove != nullptr){
         B->doMove(opponentsMove, other);
     }
+
+    //do and return random move
+    //but it doesn't work lmao
     if (B->hasMoves(side)){
-        for (int i = 1; i < 9; i++){
-            for (int j = 1; j < 9; j++){
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
                     B->doMove(m, side);
@@ -75,10 +80,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
             }
         }
     }
-    else {
-        delete m;
-        return nullptr;
-    }
+    delete m;
+    return nullptr;
 }
 
 
