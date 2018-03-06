@@ -9,14 +9,14 @@ Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 
+    this->side = side;
     Board * B = new Board();
     this->B = B;
-    this->side = side;
 
-    Move a = Move(4, 4);
-    Move b = Move(4, 5);
-    Move c = Move(5, 4);
-    Move d = Move(5, 5);
+    Move a = Move(3, 3);
+    Move b = Move(3, 4);
+    Move c = Move(4, 3);
+    Move d = Move(4, 4);
 
     B->doMove(&a, WHITE);
     B->doMove(&b, BLACK);
@@ -38,6 +38,27 @@ Player::~Player() {
 }
 
 /*
+ * just chooses some random move
+ * unsure about parameters
+*/
+Move *Player::randomMove(int msLeft) {
+    Move *m = new Move(0, 0);
+    if (B->hasMoves(side)) {
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                *m = Move(i, j);
+                if (B->checkMove(m, side)){
+                    B->doMove(m, side);
+                    return m;
+                }
+            }
+        }
+    }
+    delete m;
+    return nullptr;
+}
+
+/*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
  * or if the opponent passed on the last move, then opponentsMove will be
@@ -50,10 +71,7 @@ Player::~Player() {
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
  */
-
-
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    Move * m = new Move(0, 0);
     Side other;
     int count;
 
@@ -70,6 +88,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         B->doMove(opponentsMove, other);
     }
 
+
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
@@ -84,5 +103,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
     delete m;
     return nullptr;
+
+    //do and return random move
+    return randomMove(msLeft);
 }
 
