@@ -58,14 +58,14 @@ Move *Player::randomMove(int msLeft) {
     return nullptr;
 }
 
-vector<*Move> Player::listMoves() {
+vector<*Move> Player::listMoves(Board * board) {
     vector<*Move> movesList;
-    if (B->hasMoves(side)) {
+    if (board->hasMoves(side)) {
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
-                if (B->checkMove(m, side)){
-                    movesList.push(m);
+                if (board->checkMove(m, side)){
+                    movesList.push_back(m);
                 }
             }
         }
@@ -74,12 +74,51 @@ vector<*Move> Player::listMoves() {
 }
 
 Move *Player::minimaxChooseMove(int msLeft) {
-    vector<*Move> movesList = listMoves();
-    for (int i = 0; i < movesList.size(); i++)
-    {
-        Move *m = new Move(0, 0);
-        
+    //make tree with nodes with tons of prob unnecessary stuff
+    int totalScore = 0;
+    int maxScore = -1000000;
+    Move *bestMove = nullptr;
+    Side other;
+    if (side == BLACK) {
+        other = WHITE;
     }
+    else if (side == WHITE) {
+        other = BLACK;
+    }
+
+    //make grandma node!
+    vector<*Node> nodesList;
+    Node *node0 = new Node();
+    node0->board = B->copy();
+    for (int j = 0; j < listMoves(node0->board).size(); j++) {
+        node->childrenMoves.push_back(listMoves(node0->board)[j]);
+    }
+    nodesList.push_back(node0);
+
+    //we move first
+    for (int i = 0; i < node0->childrenMoves.size(); i++) {
+        Node *node1 = new Node();
+        node1->board = node0->board->copy();
+        node1->move = node0->childrenMoves[i];
+        node1->score = node1->board->score(node1->move, side);
+        node1->board->doMove(node1->move, side);
+        for (int k = 0; k < listMoves(node1->board).size(); k++) {
+            node1->childrenMoves.push_back(listMoves(node1->board)[k]);
+        }
+        nodesList.push_back(node1);
+
+        //their move
+        int minScore = 1000000;
+        for (int l = 0; l < listMoves(node1->childrenMoves.size()); l++) {
+            if (node1->board->score(node1->childrenMoves[l], side) < minScore) {
+                if (node2->board->score(node1->childrenMoves[l], side) + node1->score > maxScore){
+                    maxScore = totalScore + node1->score;
+                    bestMove = node1->move;
+                }
+            }
+        }
+    }
+    return bestMove;
 }
 /*
  * Compute the next move given the opponent's last move. Your AI is

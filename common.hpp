@@ -5,15 +5,6 @@ enum Side {
     WHITE, BLACK
 };
 
-struct Node {
-    Node();
-    ~Node();
-
-    Node *parent;
-    int totalScore;
-    int level;
-}
-
 class Move {
    
 public:
