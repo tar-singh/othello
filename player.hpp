@@ -17,7 +17,7 @@ public:
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *randomMove(int msLeft);
     Move *minimaxChooseMove(int msLeft);
-    vector<*Move> listMoves(Board * board);
+    vector<Move*> listMoves(Board * board);
 
 
     // Flag to tell if the player is running within the test_minimax context
@@ -25,6 +25,16 @@ public:
 
 private:
 	Side side;
+};
+
+struct Node {
+    Node();
+    ~Node();
+
+    Board *board = nullptr;
+    Move *move = nullptr;
+    vector<Move*> childrenMoves;
+    int score = 0;
 };
 
 #endif

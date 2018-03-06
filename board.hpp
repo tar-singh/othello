@@ -34,15 +34,5 @@ public:
     void setBoard(char data[]);
 };
 
-struct Node {
-    Node();
-    ~Node();
-
-    Board *board = nullptr;
-    Move *move = nullptr;
-    vector<*Move> childrenMoves;
-    int score = 0;
-};
-
 
 #endif
