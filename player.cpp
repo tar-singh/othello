@@ -60,9 +60,11 @@ Move *Player::randomMove(int msLeft) {
     return nullptr;
 }
 
-Move *Player::basicHeuristicMove(int msLeft) {
+Move *Player::basicHeuristicMove(Side side, int msLeft) {
     Move * m = new Move(0, 0);
     Move * move = new Move(0, 0);
+    int temp;
+    int total = 0;
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
@@ -81,6 +83,7 @@ Move *Player::basicHeuristicMove(int msLeft) {
         B->doMove(move, side);
         return move;
     }
+
     delete m;
     delete move;
     return nullptr;    
@@ -154,6 +157,9 @@ Move *Player::minimaxChooseMove(int msLeft) {
 
     return bestMove;
 }
+
+
+
 /*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
@@ -166,31 +172,27 @@ Move *Player::minimaxChooseMove(int msLeft) {
  *
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
+ * 
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
-    int temp;
-    int total;
-    int count;
 
     //record opponents move
     if (side == BLACK){
         other = WHITE;
-        count = B->countBlack();
     }
     else if (side == WHITE){
         other = BLACK;
-        count = B->countWhite();
     }
     if (opponentsMove != nullptr){
         B->doMove(opponentsMove, other);
     }
 
     //do and return basic heuristic move
-    return basicHeuristicMove(msLeft);
-
-    //do and return random move (
     //uncomment below to run and comment out basicHeuristicMove
-    //return randomMove(msLeft);
+    return basicHeuristicMove(side, msLeft);
+   
+    // do and return random move
+    // return randomMove(msLeft);
 }
 
