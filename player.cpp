@@ -186,7 +186,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         B->doMove(opponentsMove, other);
     }
 
-    //do and return random move
-    return randomMove(msLeft);
+    //do and return basic heuristic move
+    return basicHeuristicMove(msLeft);
+
+    //do and return random move (
+    //uncomment below to run and comment out basicHeuristicMove
+    //return randomMove(msLeft);
 }
 
