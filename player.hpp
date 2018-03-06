@@ -11,6 +11,7 @@ class Player {
 public:
     Player(Side side);
     ~Player();
+    Board * B;
 
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *randomMove(int msLeft);
@@ -21,7 +22,6 @@ public:
 
 private:
 	Side side;
-	Board * B;
 };
 
 #endif
