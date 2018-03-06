@@ -65,8 +65,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         B->doMove(opponentsMove, other);
     }
     if (B->hasMoves(side)){
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
                     B->doMove(m, side);
