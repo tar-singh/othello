@@ -60,7 +60,7 @@ Move *Player::randomMove(int msLeft) {
     return nullptr;
 }
 
-Move *Player::basicHeuristicMove(int msLeft) {
+Move *Player::basicHeuristicMove(Side side, int msLeft) {
     Move * m = new Move(0, 0);
     Move * move = new Move(0, 0);
     int temp;
@@ -83,6 +83,7 @@ Move *Player::basicHeuristicMove(int msLeft) {
         B->doMove(move, side);
         return move;
     }
+
     delete m;
     delete move;
     return nullptr;    
@@ -187,7 +188,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         B->doMove(opponentsMove, other);
     }
 
-    return basicHeuristicMove(msLeft);
+    return basicHeuristicMove(side, msLeft);
    
     // do and return random move
     // return randomMove(msLeft);
