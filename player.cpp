@@ -40,8 +40,7 @@ Player::~Player() {
 }
 
 /*
- * just chooses some random move
- * unsure about parameters
+ * just chooses some random move, unsure about parameters
 */
 Move *Player::randomMove(int msLeft) {
     Move *m = new Move(0, 0);
@@ -148,7 +147,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * move = new Move(0, 0);
     Side other;
     int temp;
-    int score;
+    int total;
+    int count;
 
     //record opponents move
     if (side == BLACK){
@@ -169,10 +169,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
                     // std::this_thread::sleep_for(std::chrono::seconds(5));
-                    temp = score(m, side);
-                    if (temp > score)
+                    temp = B->score(m, side);
+                    if (temp > total)
                     {
-                        score = temp;
+                        total = temp;
                         *move = Move(i, j);
                     }
                 }

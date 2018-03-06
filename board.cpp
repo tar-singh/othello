@@ -218,7 +218,7 @@ int Board::score(Move *m, Side side){
     X = x;
 
     // right
-    if(onBoard(X + 1, Y) && occupied(X + 1, Y))
+    while(onBoard(X + 1, Y) && occupied(X + 1, Y))
     {
         // if piece is the other color
         if(!get(side, X + 1, Y))
@@ -237,7 +237,7 @@ int Board::score(Move *m, Side side){
     X = x;
 
     // above
-    if(onBoard(X, Y + 1) && occupied(X, Y + 1))
+    while(onBoard(X, Y + 1) && occupied(X, Y + 1))
     {
         // if piece is the other color
         if(!get(side, X, Y + 1))
@@ -256,7 +256,7 @@ int Board::score(Move *m, Side side){
     Y = y;
 
     // below 
-    if(onBoard(X, Y - 1) && occupied(X, Y - 1))
+    while(onBoard(X, Y - 1) && occupied(X, Y - 1))
     {
         // if piece is the other color
         if(!get(side, X, Y - 1))
@@ -275,13 +275,13 @@ int Board::score(Move *m, Side side){
     Y = y;
 
     // top left
-    if(onBoard(X - 1, Y + 1) && occupied(X - 1, Y + 1))
+    while(onBoard(X - 1, Y + 1) && occupied(X - 1, Y + 1))
     {
         // if piece is the other color
         if(!get(side, X - 1, Y + 1))
         {
             X--;
-            Y++
+            Y++;
             count++;
         }
         // other color enclosed in this color
@@ -296,7 +296,7 @@ int Board::score(Move *m, Side side){
     Y = y;
 
     // bottom left
-    if(onBoard(X - 1, Y - 1) && occupied(X - 1, Y - 1))
+    while(onBoard(X - 1, Y - 1) && occupied(X - 1, Y - 1))
     {
         // if piece is the other color
         if(!get(side, X - 1, Y - 1))
@@ -317,7 +317,7 @@ int Board::score(Move *m, Side side){
     Y = y;
 
     // top right
-    if(onBoard(X + 1, Y + 1) && occupied(X + 1, Y + 1))
+    while(onBoard(X + 1, Y + 1) && occupied(X + 1, Y + 1))
     {
         // if piece is the other color
         if(!get(side, X + 1, Y + 1))
@@ -338,7 +338,7 @@ int Board::score(Move *m, Side side){
     Y = y;
 
     // bottom right
-    if(onBoard(X + 1, Y - 1) && occupied(X + 1, Y - 1))
+    while(onBoard(X + 1, Y - 1) && occupied(X + 1, Y - 1))
     {
         // if piece is the other color
         if(!get(side, X + 1, Y - 1))
