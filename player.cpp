@@ -8,13 +8,9 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
+
     Board * B = new Board();
-
-    /*Board * B = new Board();
-
-    Board * board = new Board();
-
-    /*
+    this->B = B;
     this->side = side;
 
     Move a = Move(3, 3);
@@ -26,8 +22,6 @@ Player::Player(Side side) {
     B->doMove(&b, BLACK);
     B->doMove(&c, BLACK);
     B->doMove(&d, WHITE);
-
-    */
 
     /*
      * TODO: Do any initialization you need to do here (setting up the board,
@@ -60,11 +54,22 @@ Player::~Player() {
 
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * m = new Move(0, 0);
+    Side other;
+    if (side == BLACK){
+        other = WHITE;
+    }
+    else if (side == WHITE){
+        other = BLACK;
+    }
+    if (opponentsMove != nullptr){
+        B->doMove(opponentsMove, other);
+    }
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
+                    B->doMove(m, side);
                     return m;
                 }
             }
