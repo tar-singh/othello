@@ -1,5 +1,7 @@
 #include "player.hpp"
- 
+#include <thread>
+#include <chrono>
+
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -43,6 +45,8 @@ Player::~Player() {
 */
 Move *Player::randomMove(int msLeft) {
     Move *m = new Move(0, 0);
+    int score;
+
     if (B->hasMoves(side)) {
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
@@ -72,8 +76,11 @@ Move *Player::randomMove(int msLeft) {
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
+    Move * m = new Move(0, 0);
+    Move * move = new Move(0, 0);
     Side other;
-    int count;
+    int temp;
+    int score;
 
     //record opponents move
     if (side == BLACK){
@@ -94,14 +101,24 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
             for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
-                    //
-                    B->doMove(m, side);
-                    return m;
+                    // std::this_thread::sleep_for(std::chrono::seconds(5));
+                    temp = score(m, side);
+                    if (temp > score)
+                    {
+                        score = temp;
+                        *move = Move(i, j);
+                    }
                 }
             }
         }
     }
+
+    B->doMove(move, side);
+    return move;
+
+
     delete m;
+    delete move;
     return nullptr;
 
     //do and return random move

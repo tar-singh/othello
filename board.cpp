@@ -29,19 +29,23 @@ Board *Board::copy() {
     return newBoard;
 }
 
+// returns if occupied by piece
 bool Board::occupied(int x, int y) {
     return taken[x + 8*y];
 }
 
+// returns color of piece on board
 bool Board::get(Side side, int x, int y) {
     return occupied(x, y) && (black[x + 8*y] == (side == BLACK));
 }
 
+// sets a piece on the board to a certain color
 void Board::set(Side side, int x, int y) {
     taken.set(x + 8*y);
     black.set(x + 8*y, side == BLACK);
 }
 
+// if spot is on board
 bool Board::onBoard(int x, int y) {
     return(0 <= x && x < 8 && 0 <= y && y < 8);
 }
@@ -58,11 +62,14 @@ bool Board::isDone() {
 /*
  * Returns true if there are legal moves for the given side.
  */
-bool Board::hasMoves(Side side) {
+bool Board::hasMoves(Side side){
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             Move move(i, j);
-            if (checkMove(&move, side)) return true;
+            if (checkMove(&move, side)) 
+                {
+                    return true;
+                }
         }
     }
     return false;
@@ -94,7 +101,7 @@ bool Board::checkMove(Move *m, Side side) {
                     x += dx;
                     y += dy;
                 } while (onBoard(x, y) && get(other, x, y));
-
+                
                 if (onBoard(x, y) && get(side, x, y)) return true;
             }
         }
@@ -179,3 +186,198 @@ void Board::setBoard(char data[]) {
         }
     }
 }
+
+// will usually return a positive number (depends on bonus). 
+// will not return a negative number for the other side.
+// includes bonus/multipolier. 
+int Board::score(Move *m, Side side){
+    int X = m->getX();
+    int Y = m->getY();
+    int x = X;
+    int y = Y;
+    int score = 1;
+    int count = 0;
+
+    // left
+    while(onBoard(X - 1, Y) && occupied(X - 1, Y))
+    {
+        // if piece is the other color
+        if(!get(side, X - 1, Y))
+        {
+            X--;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    X = x;
+
+    // right
+    if(onBoard(X + 1, Y) && occupied(X + 1, Y))
+    {
+        // if piece is the other color
+        if(!get(side, X + 1, Y))
+        {
+            X++;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    X = x;
+
+    // above
+    if(onBoard(X, Y + 1) && occupied(X, Y + 1))
+    {
+        // if piece is the other color
+        if(!get(side, X, Y + 1))
+        {
+            Y++;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    Y = y;
+
+    // below 
+    if(onBoard(X, Y - 1) && occupied(X, Y - 1))
+    {
+        // if piece is the other color
+        if(!get(side, X, Y - 1))
+        {
+            Y--;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    Y = y;
+
+    // top left
+    if(onBoard(X - 1, Y + 1) && occupied(X - 1, Y + 1))
+    {
+        // if piece is the other color
+        if(!get(side, X - 1, Y + 1))
+        {
+            X--;
+            Y++
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    X = x;
+    Y = y;
+
+    // bottom left
+    if(onBoard(X - 1, Y - 1) && occupied(X - 1, Y - 1))
+    {
+        // if piece is the other color
+        if(!get(side, X - 1, Y - 1))
+        {
+            X--;
+            Y--;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    X = x;
+    Y = y;
+
+    // top right
+    if(onBoard(X + 1, Y + 1) && occupied(X + 1, Y + 1))
+    {
+        // if piece is the other color
+        if(!get(side, X + 1, Y + 1))
+        {
+            X++;
+            Y++;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    X = x;
+    Y = y;
+
+    // bottom right
+    if(onBoard(X + 1, Y - 1) && occupied(X + 1, Y - 1))
+    {
+        // if piece is the other color
+        if(!get(side, X + 1, Y - 1))
+        {
+            X++;
+            Y--;
+            count++;
+        }
+        // other color enclosed in this color
+        else
+        {
+            score += count;
+            break;
+        }
+    }
+    count = 0;
+    X = x;
+    Y = y;
+
+    // adds bonuses depending on position of board
+
+    if ((X == 1 && (Y == 1 || Y == 6)) || (X == 6 && (Y == 1 || Y == 6)))
+    {
+       score -= 3;
+    }
+
+    else if ((X == 0 && (Y == 0 || Y == 7)) || (X == 7 && (Y == 7 || Y == 0)))
+    {
+        score += 3;
+    }
+    else if ((X == 0 && (Y == 1 || Y == 6)) || (X == 1 && (Y == 0 || Y == 7)) || (X == 6 && (Y == 0 || Y == 7)) || (X == 7 && (Y == 1 || Y == 6)))
+    {
+        score -= 2;
+    }
+    else if (X == 0 || X == 7 || Y == 0 || Y == 7)
+    {
+        score += 2;
+    }
+
+    return score;
+}
+
