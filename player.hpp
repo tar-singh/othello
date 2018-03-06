@@ -16,6 +16,7 @@ public:
 
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *randomMove(int msLeft);
+    Move *basicHeuristicMove(Side side, int msLeft);
     Move *minimaxChooseMove(int msLeft);
     vector<Move*> listMoves(Board * board);
 
@@ -27,14 +28,17 @@ private:
 	Side side;
 };
 
-struct Node {
-    Node();
-    ~Node();
+class Node {
+
+public:
+    Node() {}
+    ~Node() {}
 
     Board *board = nullptr;
     Move *move = nullptr;
     vector<Move*> childrenMoves;
     int score = 0;
+
 };
 
 #endif

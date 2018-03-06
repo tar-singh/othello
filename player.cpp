@@ -24,12 +24,6 @@ Player::Player(Side side) {
     B->doMove(&b, BLACK);
     B->doMove(&c, BLACK);
     B->doMove(&d, WHITE);
-
-    /*
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
 }
 
 /*
@@ -64,22 +58,26 @@ Move *Player::basicHeuristicMove(Side side, int msLeft) {
     Move * m = new Move(0, 0);
     Move * move = new Move(0, 0);
     int temp;
-    int total = 0;
+    int total = -100000;
+    bool validMove = false;
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
-                    // std::this_thread::sleep_for(std::chrono::seconds(5));
                     temp = B->score(m, side);
                     if (temp > total)
                     {
                         total = temp;
                         *move = Move(i, j);
+                        validMove = true;
                     }
                 }
             }
         }
+    }
+
+    if (validMove) {
         B->doMove(move, side);
         return move;
     }
