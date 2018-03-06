@@ -44,7 +44,6 @@ Player::~Player() {
 */
 Move *Player::randomMove(int msLeft) {
     Move *m = new Move(0, 0);
-    int score;
 
     if (B->hasMoves(side)) {
         for (int i = 0; i < 8; i++){
@@ -129,6 +128,9 @@ Move *Player::minimaxChooseMove(int msLeft) {
 
     return bestMove;
 }
+
+
+
 /*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
@@ -141,23 +143,21 @@ Move *Player::minimaxChooseMove(int msLeft) {
  *
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
+ * 
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * m = new Move(0, 0);
     Move * move = new Move(0, 0);
     Side other;
     int temp;
-    int total;
-    int count;
+    int total = 0;
 
     //record opponents move
     if (side == BLACK){
         other = WHITE;
-        count = B->countBlack();
     }
     else if (side == WHITE){
         other = BLACK;
-        count = B->countWhite();
     }
     if (opponentsMove != nullptr){
         B->doMove(opponentsMove, other);
@@ -169,6 +169,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
                     // std::this_thread::sleep_for(std::chrono::seconds(5));
+                    std::cerr << "i: " << i << std::endl;
+                    std::cerr << "j: " << j << std::endl;
+                    std::cerr << "help" << std::endl;
                     temp = B->score(m, side);
                     if (temp > total)
                     {
@@ -187,8 +190,5 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     delete m;
     delete move;
     return nullptr;
-
-    //do and return random move
-    return randomMove(msLeft);
 }
 
