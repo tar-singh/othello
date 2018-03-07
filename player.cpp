@@ -105,7 +105,8 @@ vector<Move*> Player::listMoves(Board * board, Side side) {
 Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
     int maxScore = -1000000;
     int newScore;
-    int branchScore;
+    vector<int> branchScores;
+    vector<Move*> bestMoves;
     Move *bestMove = nullptr;
 
     //make grandma node!
@@ -138,7 +139,7 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                     nodesList.push_back(node1);
                 }  
                 //their move
-                int minScore = 1000000;
+                int branchScore = 1000000;
                 for (unsigned int l = 0; l < (node1->childrenMoves).size(); l++) {
                     Node *node2 = new Node(node1->childrenMoves[l]);
                     node2->board = node1->board->copy();
@@ -146,9 +147,9 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                     newScore = node2->board->countBlack() - node2->board->countWhite();
                     std::cerr << std::endl;
                     std::cerr << node2->move->getX() << "," << node2->move->getY() << "  new Score:" << newScore << std::endl;
-                    std::cerr << "minScore:" << minScore << std::endl;
+                    std::cerr << "minScore:" << branchScore << std::endl;
                     std::cerr << "maxScore:" << maxScore << std::endl;
-                    if (newScore < minScore && newScore > maxScore){
+                    if (newScore < branchScore && newScore > maxScore){
                         minScore = newScore;
                         maxScore = newScore;
                         bestMove = node1->move;
@@ -174,16 +175,16 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
             node1->board->doMove(node1->move, WHITE);
             if (listMoves(node1->board, BLACK).size() <= 0) {
                 maxScore = node1->board->countWhite() - node1->board->countBlack();
+                branchScores.push_back(maxScore);
                 nodesList.push_back(node1);
             }
             else {
                 for (unsigned int q = 0; q < listMoves(node1->board, BLACK).size(); q++) {
                     node1->childrenMoves.push_back(listMoves(node1->board, BLACK)[q]);
-                    bestMove = node1->move;
                     nodesList.push_back(node1);
                 }  
                 //their move
-                int minScore = 1000000;
+                int branchScore = 1000000;
                 for (unsigned int r = 0; r < (node1->childrenMoves).size(); r++) {
                     Node *node2 = new Node(node1->childrenMoves[r]);
                     node2->board = node1->board->copy();
@@ -191,19 +192,20 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                     newScore = node2->board->countWhite() - node2->board->countBlack();
                     std::cerr << std::endl;
                     std::cerr << node2->move->getX() << "," << node2->move->getY() << " new Score: " << newScore << std::endl;
-                    std::cerr << "minScore:" << minScore << std::endl;
-                    std::cerr << "maxScore:" << maxScore << std::endl;
-                    if (newScore < minScore){
-                        minScore = newScore;
+                    std::cerr << "minScore:" << branchScore << std::endl;
+                    if (newScore < branchScore){
                         branchScore = newScore;
                     }
                 }
-                if (branchScore > maxScore) {
-                    maxScore = branchScore;
-                    bestMove = node1->move;
-                }
-                std::cerr << "new best move:" << bestMove->getX() << "," << bestMove ->getY() << std::endl;           
+                branchScores.push_back(branchScore);
+                bestMoves.push_back(node1->move);      
             }
+        }
+    }
+    int bestMoveIndex = 0;
+    for (unsigned int z = 0; z < branchScores.size(); z++) {
+        if (branchScores[z] > maxScore) {
+            bestMoveIndex = z;
         }
     }
 
@@ -213,8 +215,8 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
         delete nodesList[m];
     }*/
 
-    B->doMove(bestMove, side);
-    return bestMove;
+    B->doMove(bestMoves[bestMoveIndex], side);
+    return bestMoves[bestMoveIndex];
 }
 
 
