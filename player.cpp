@@ -103,9 +103,9 @@ vector<Move*> Player::listMoves(Board * board, Side side) {
 }
 
 Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
-    //make tree with nodes with tons of prob unnecessary stuff
     int maxScore = -1000000;
     int newScore;
+    int branchScore;
     Move *bestMove = nullptr;
 
     //make grandma node!
@@ -144,10 +144,15 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                     node2->board = node1->board->copy();
                     node2->board->doMove(node2->move, WHITE);
                     newScore = node2->board->countBlack() - node2->board->countWhite();
+                    std::cerr << std::endl;
+                    std::cerr << node2->move->getX() << "," << node2->move->getY() << "  new Score:" << newScore << std::endl;
+                    std::cerr << "minScore:" << minScore << std::endl;
+                    std::cerr << "maxScore:" << maxScore << std::endl;
                     if (newScore < minScore && newScore > maxScore){
                         minScore = newScore;
                         maxScore = newScore;
                         bestMove = node1->move;
+                        std::cerr << "new best move: " << bestMove->getX() << "," << bestMove ->getY() << std::endl;                        
                     }
                 }           
             }
@@ -184,16 +189,20 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                     node2->board = node1->board->copy();
                     node2->board->doMove(node2->move, BLACK);
                     newScore = node2->board->countWhite() - node2->board->countBlack();
-                    std::cerr << node2->move->getX() << "," << node2->move->getY() << " new Score" << newScore << std::endl;
-                    std::cerr << "minScore" << minScore << std::endl;
-                    std::cerr << "maxScore" << maxScore << std::endl;
-                    if (newScore < minScore && newScore > maxScore){
+                    std::cerr << std::endl;
+                    std::cerr << node2->move->getX() << "," << node2->move->getY() << " new Score: " << newScore << std::endl;
+                    std::cerr << "minScore:" << minScore << std::endl;
+                    std::cerr << "maxScore:" << maxScore << std::endl;
+                    if (newScore < minScore){
                         minScore = newScore;
-                        maxScore = newScore;
-                        bestMove = node1->move;
-                        std::cerr << "new best move" << bestMove->getX() << "," << bestMove ->getY() << std::endl;
+                        branchScore = newScore;
                     }
-                }           
+                }
+                if (branchScore > maxScore) {
+                    maxScore = branchScore;
+                    bestMove = node1->move;
+                }
+                std::cerr << "new best move:" << bestMove->getX() << "," << bestMove ->getY() << std::endl;           
             }
         }
     }
