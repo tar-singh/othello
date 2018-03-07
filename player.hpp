@@ -17,12 +17,14 @@ public:
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *randomMove(int msLeft);
     Move *basicHeuristicMove(Side side, int msLeft);
-    Move *minimaxChooseMove(int msLeft);
-    vector<Move*> listMoves(Board * board);
+    Move *minimaxMove(Move *opponentsMove, Side side, int msLeft);
+    vector<Move*> listMoves(Board * board, Side side);
 
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
+
+    bool testingRandom;
 
 private:
 	Side side;
@@ -31,13 +33,13 @@ private:
 class Node {
 
 public:
-    Node() {}
-    ~Node() {}
 
+	Node(Move *move) {
+		this->move = move;
+	};
     Board *board = nullptr;
-    Move *move = nullptr;
+    Move * move;
     vector<Move*> childrenMoves;
-    int score = 0;
 
 };
 
