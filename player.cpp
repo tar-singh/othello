@@ -24,12 +24,6 @@ Player::Player(Side side) {
     B->doMove(&b, BLACK);
     B->doMove(&c, BLACK);
     B->doMove(&d, WHITE);
-
-    /*
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
 }
 
 /*
@@ -65,13 +59,12 @@ Move *Player::basicHeuristicMove(Side side, int msLeft) {
     Move * move = new Move(0, 0);
     bool validMove = false;
     int temp;
-    int total = 0;
+    int total = -100000;
     if (B->hasMoves(side)){
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 *m = Move(i, j);
                 if (B->checkMove(m, side)){
-                    // std::this_thread::sleep_for(std::chrono::seconds(5));
                     temp = B->score(m, side);
                     if (temp > total)
                     {
@@ -95,7 +88,7 @@ Move *Player::basicHeuristicMove(Side side, int msLeft) {
     return nullptr;    
 }
 
-vector<Move*> Player::listMoves(Board * board) {
+vector<Move*> Player::listMoves(Board * board, Side side) {
     vector<Move*> movesList;
     if (board->hasMoves(side)) {
         for (int i = 0; i < 8; i++){
@@ -109,62 +102,124 @@ vector<Move*> Player::listMoves(Board * board) {
     }
     return movesList;
 }
-/*
-Move *Player::minimaxChooseMove(int msLeft) {
-    //make tree with nodes with tons of prob unnecessary stuff
-    int totalScore = 0;
+
+
+Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
     int maxScore = -1000000;
+    int newScore;
+    int branchScore;
     Move *bestMove = nullptr;
-    Side other;
-    if (side == BLACK) {
-        other = WHITE;
-    }
-    else if (side == WHITE) {
-        other = BLACK;
-    }
 
     //make grandma node!
     vector<Node*> nodesList;
-    Node *node0 = new Node();
+    Node *node0 = new Node(opponentsMove);
     node0->board = B->copy();
-    for (unsigned int j = 0; j < listMoves(node0->board).size(); j++) {
-        node0->childrenMoves.push_back(listMoves(node0->board)[j]);
-    }
-    nodesList.push_back(node0);
 
     //we move first
-    for (unsigned int i = 0; i < (node0->childrenMoves).size(); i++) {
-        Node *node1 = new Node();
-        node1->board = node0->board->copy();
-        node1->move = node0->childrenMoves[i];
-        node1->score = node1->board->score(node1->move, side);
-        node1->board->doMove(node1->move, side);
-        for (unsigned int k = 0; k < listMoves(node1->board).size(); k++) {
-            node1->childrenMoves.push_back(listMoves(node1->board)[k]);
+    if (side == BLACK) {
+        //if no more moves after this one
+        if (listMoves(node0->board, BLACK).size() <= 0) {
+            return bestMove;
         }
-        nodesList.push_back(node1);
-
-        //their move
-        int minScore = 1000000;
-        for (unsigned int l = 0; l < (node1->childrenMoves).size(); l++) {
-            if (node1->board->score(node1->childrenMoves[l], side) < minScore) {
-                if (node1->board->score(node1->childrenMoves[l], side) + node1->score > maxScore){
-                    maxScore = totalScore + node1->score;
-                    bestMove = node1->move;
-                }
+        for (unsigned int j = 0; j < listMoves(node0->board, BLACK).size(); j++) {
+            node0->childrenMoves.push_back(listMoves(node0->board, BLACK)[j]);
+        }
+        nodesList.push_back(node0);
+        for (unsigned int i = 0; i < (node0->childrenMoves).size(); i++) {
+            Node *node1 = new Node(node0->childrenMoves[i]);
+            node1->board = node0->board->copy();
+            node1->board->doMove(node1->move, BLACK);
+            if (listMoves(node1->board, WHITE).size() <= 0) {
+                maxScore = node1->board->countBlack() - node1->board->countWhite();
+                bestMove = node1->move;
+                nodesList.push_back(node1);
+            }
+            else {
+                for (unsigned int k = 0; k < listMoves(node1->board, WHITE).size(); k++) {
+                    node1->childrenMoves.push_back(listMoves(node1->board, WHITE)[k]);
+                    nodesList.push_back(node1);
+                }  
+                //their move
+                int minScore = 1000000;
+                for (unsigned int l = 0; l < (node1->childrenMoves).size(); l++) {
+                    Node *node2 = new Node(node1->childrenMoves[l]);
+                    node2->board = node1->board->copy();
+                    node2->board->doMove(node2->move, WHITE);
+                    newScore = node2->board->countBlack() - node2->board->countWhite();
+                    std::cerr << std::endl;
+                    std::cerr << node2->move->getX() << "," << node2->move->getY() << "  new Score:" << newScore << std::endl;
+                    std::cerr << "minScore:" << minScore << std::endl;
+                    std::cerr << "maxScore:" << maxScore << std::endl;
+                    if (newScore < minScore && newScore > maxScore){
+                        minScore = newScore;
+                        maxScore = newScore;
+                        bestMove = node1->move;
+                        std::cerr << "new best move: " << bestMove->getX() << "," << bestMove ->getY() << std::endl;                        
+                    }
+                }           
             }
         }
     }
 
-    //delete stuff
-    for (unsigned int m = 0; m < nodesList.size(); m++) {
-        delete nodesList[m];
+    else if (side == WHITE) {
+        //if no more moves after this one
+        if (listMoves(node0->board, WHITE).size() <= 0) {
+            return bestMove;
+        }
+        for (unsigned int j = 0; j < listMoves(node0->board, WHITE).size(); j++) {
+            node0->childrenMoves.push_back(listMoves(node0->board, WHITE)[j]);
+        }
+        nodesList.push_back(node0);    
+        for (unsigned int n = 0; n < (node0->childrenMoves).size(); n++) {
+            Node *node1 = new Node(node0->childrenMoves[n]);
+            node1->board = node0->board->copy();
+            node1->board->doMove(node1->move, WHITE);
+            if (listMoves(node1->board, BLACK).size() <= 0) {
+                maxScore = node1->board->countWhite() - node1->board->countBlack();
+                nodesList.push_back(node1);
+            }
+            else {
+                for (unsigned int q = 0; q < listMoves(node1->board, BLACK).size(); q++) {
+                    node1->childrenMoves.push_back(listMoves(node1->board, BLACK)[q]);
+                    bestMove = node1->move;
+                    nodesList.push_back(node1);
+                }  
+                //their move
+                int minScore = 1000000;
+                for (unsigned int r = 0; r < (node1->childrenMoves).size(); r++) {
+                    Node *node2 = new Node(node1->childrenMoves[r]);
+                    node2->board = node1->board->copy();
+                    node2->board->doMove(node2->move, BLACK);
+                    newScore = node2->board->countWhite() - node2->board->countBlack();
+                    std::cerr << std::endl;
+                    std::cerr << node2->move->getX() << "," << node2->move->getY() << " new Score: " << newScore << std::endl;
+                    std::cerr << "minScore:" << minScore << std::endl;
+                    std::cerr << "maxScore:" << maxScore << std::endl;
+                    if (newScore < minScore){
+                        minScore = newScore;
+                        branchScore = newScore;
+                    }
+                }
+                if (branchScore > maxScore) {
+                    maxScore = branchScore;
+                    bestMove = node1->move;
+                }
+                std::cerr << "new best move:" << bestMove->getX() << "," << bestMove ->getY() << std::endl;           
+            }
+        }
     }
 
+
+    //delete stuff
+    /*for (unsigned int m = 0; m < nodesList.size(); m++) {
+        delete nodesList[m];
+    }*/
+
+    B->doMove(bestMove, side);
     return bestMove;
 }
 
-*/
+
 
 
 /*
@@ -195,11 +250,17 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         B->doMove(opponentsMove, other);
     }
 
-    //do and return basic heuristic move
-    //uncomment below to run and comment out basicHeuristicMove
-    return basicHeuristicMove(side, msLeft);
-   
+    if (testingMinimax == true) {
+        return minimaxMove(opponentsMove, side, msLeft);
+    }
+
     // do and return random move
+    // uncomment to run
     // return randomMove(msLeft);
+
+    // do and return basic heuristic move
+    // comment out basicHeuristicMove to run random move
+    return basicHeuristicMove(side, msLeft);
+
 }
 
