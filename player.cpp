@@ -104,8 +104,7 @@ vector<Move*> Player::listMoves(Board * board, Side side) {
 
 Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
     int newScore;
-    vector<int> branchScores;
-    vector<Move*> bestMoves;
+    int maxScore = -1000000;
     Move *bestMove = nullptr;
 
     //make grandma node!
@@ -128,8 +127,8 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
             node1->board = node0->board->copy();
             node1->board->doMove(node1->move, BLACK);
             if (listMoves(node1->board, WHITE).size() <= 0) {
-                int maxScore = node1->board->countBlack() - node1->board->countWhite();
-                branchScores.push_back(maxScore);
+                maxScore = node1->board->countBlack() - node1->board->countWhite();
+                bestMove = node1->move;
                 nodesList.push_back(node1);
             }
             else {
@@ -142,16 +141,16 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                 for (unsigned int r = 0; r < (node1->childrenMoves).size(); r++) {
                     Node *node2 = new Node(node1->childrenMoves[r]);
                     node2->board = node1->board->copy();
-                    node2->board->doMove(node2->move, BLACK);
+                    node2->board->doMove(node2->move, WHITE);
                     newScore = node2->board->countBlack() - node2->board->countWhite();
                     if (newScore < branchScore){
                         branchScore = newScore;
                     }
                 }
-                branchScores.push_back(branchScore);
-                std::cerr << std::endl;
-                std::cerr << "minScore:" << branchScore << std::endl;
-                bestMoves.push_back(node1->move);      
+                if (branchScore > maxScore){
+                    maxScore = branchScore;
+                    bestMove = node1->move;
+                }    
             }
         }
     }
@@ -170,8 +169,8 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
             node1->board = node0->board->copy();
             node1->board->doMove(node1->move, WHITE);
             if (listMoves(node1->board, BLACK).size() <= 0) {
-                int maxScore = node1->board->countWhite() - node1->board->countBlack();
-                branchScores.push_back(maxScore);
+                maxScore = node1->board->countWhite() - node1->board->countBlack();
+                bestMove = node1->move;
                 nodesList.push_back(node1);
             }
             else {
@@ -190,28 +189,30 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
                         branchScore = newScore;
                     }
                 }
-                branchScores.push_back(branchScore);
-                std::cerr << std::endl;
-                std::cerr << "minScore:" << branchScore << std::endl;
-                bestMoves.push_back(node1->move);      
+                if (branchScore > maxScore){
+                    maxScore = branchScore;
+                    bestMove = node1->move;
+                }    
             }
         }
     }
-    int bestMoveIndex = 0;
-    for (unsigned int z = 0; z < branchScores.size(); z++) {
-        if (branchScores[z] > branchScores[0]) {
-            bestMoveIndex = z;
-        }
-    }
 
-
+    B->doMove(bestMove, side);
+    
     //delete stuff
     /*for (unsigned int m = 0; m < nodesList.size(); m++) {
-        delete nodesList[m];
+        delete nodesList[nodesList.size() - m - 1]->board;
+        if (nodesList[nodesList.size() - m - 1]->childrenMoves.size() > 0) {
+            for (unsigned int x = 0; x < nodesList[nodesList.size() - m - 1]->childrenMoves.size(); x++) {
+                delete (nodesList[nodesList.size() - m - 1]->childrenMoves)[x];
+            }
+        }
+    }
+    for (unsigned int y = 0; y < nodesList.size(); y++) {
+        delete nodesList[y];
     }*/
 
-    B->doMove(bestMoves[bestMoveIndex], side);
-    return bestMoves[bestMoveIndex];
+    return bestMove;
 }
 
 
