@@ -217,6 +217,7 @@ Move *Player::minimaxMove(Move *opponentsMove, int msLeft) {
     return bestMove;
 }
 
+
 Move *Player::minimaxHeuristicMove(Move *opponentsMove, int msLeft) {
     int newScore;
     int maxScore = -1000000;
@@ -330,8 +331,8 @@ Move *Player::minimaxHeuristicMove(Move *opponentsMove, int msLeft) {
     return bestMove;
 }
 
-//commented out all the nodesVector cuz idk y it doesn't like it 
-//also commented out hpp nodesVector
+
+vector<Node*> nodesVector;
 Node *Player::alphaBetaMove(Node *node, int msLeft) {
     // determine side of other
     Side other;
@@ -364,6 +365,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                 Node *node1 = new Node(node->childrenMoves[i]);
                 // determine nodeSide, level, and score
                 node1->board = node->board->copy();
+                node1->board->doMove(node1->move, node1->nodeSide);
                 node1->level = node->level + 1;
                 node1->alpha = node->alpha;
                 node1->beta = node->beta;
@@ -376,29 +378,45 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                     node1->score = -1e8;
                 }
                 node1->parent = node;
-                //nodesVector.push_back(node1);
+                nodesVector.push_back(node1);
                 Node *newNode = alphaBetaMove(node1, msLeft);
 
                 // starts going back up tree to determine new alpha/beta values
                 if (newNode->nodeSide == side) {
-                    if (newNode->score < newNode->parent->score) {
+                    if (newNode->score <= newNode->parent->score) {
                         newNode->parent->score = newNode->score;
                         newNode->parent->bestMove = newNode->move;
                     }
-                    if (newNode->score < newNode->beta) {
+                    if (newNode->score <= newNode->beta) {
                         newNode->parent->beta = newNode->score;
                     }
                 }
                 else if (newNode->nodeSide == other) {
-                    if (newNode->score > newNode->parent->score) {
+                    if (newNode->score >= newNode->parent->score) {
                         newNode->parent->score = newNode->score;
                         newNode->parent->bestMove = newNode->move;
                     }
-                    if (newNode->score > newNode->alpha) {
-                        newNode->parent->alpha = newNode->score;
+                    if (newNode->score >= newNode->alpha) {
+                        newNode->parent->alpha = newNode->score; 
                     }
                 }
-                return newNode;
+                std::cerr << std::endl;
+                std::cerr << "new set" << std::endl;
+                std::cerr << "node side: " << newNode->nodeSide << std::endl;
+                std::cerr << "node score: " << newNode->score << std::endl;
+                std::cerr << "node level: " << newNode->level << std::endl;
+                std::cerr << "node move: " << newNode->move->getX() << "," << newNode->move->getY() << std::endl;
+                std::cerr << std::endl;
+                std::cerr << "parent node side: " << newNode->parent->nodeSide << std::endl;
+                std::cerr << "parent node score: " << newNode->parent->score << std::endl;
+                std::cerr << "parent node level: " << newNode->parent->level << std::endl;
+                std::cerr << "parent node bestMove: " << newNode->parent->bestMove->getX() << "," <<newNode->parent->bestMove->getY() << std::endl;
+                if (newNode->alpha > newNode->beta) {
+                    break;
+                }
+                if (newNode->level == 0) {
+                    return newNode;
+                }
             }
         }
     }
@@ -422,7 +440,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
-    testingHeuristicMinimax = true;
+    runningAlphaBeta = true;
 
     //record opponents move
     if (side == BLACK){
@@ -445,7 +463,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         Node *node0 = new Node(opponentsMove);
         node0->board = B->copy();
         node0->nodeSide = side;
-        //nodesVector.push_back(node0);
+        nodesVector.push_back(node0);
         Move *bestMove = alphaBetaMove(node0, msLeft)->move;
         B->doMove(bestMove, side);
         return bestMove;

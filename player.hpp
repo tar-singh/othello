@@ -41,7 +41,7 @@ public:
     Move *minimaxHeuristicMove(Move *opponentsMove, int msLeft);
     vector<Move*> listMoves(Board * board, Side side);
     Node *alphaBetaMove(Node *node, int msLeft);
-    //vector<Node*> nodesVector;
+
 
 
     // Flag to tell if the player is running within the test_minimax context
