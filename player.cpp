@@ -10,6 +10,8 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
+    testingHeuristicMinimax = false;
+    runningAlphaBeta = false;
 
     this->side = side;
     Board * B = new Board();
@@ -102,7 +104,7 @@ vector<Move*> Player::listMoves(Board * board, Side side) {
     return movesList;
 }
 
-Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
+Move *Player::minimaxMove(Move *opponentsMove, int msLeft) {
     int newScore;
     int maxScore = -1000000;
     Move *bestMove = nullptr;
@@ -215,6 +217,193 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
     return bestMove;
 }
 
+Move *Player::minimaxHeuristicMove(Move *opponentsMove, int msLeft) {
+    int newScore;
+    int maxScore = -1000000;
+    Move *bestMove = nullptr;
+
+    //make grandma node!
+    vector<Node*> nodesList;
+    Node *node0 = new Node(opponentsMove);
+    node0->board = B->copy();
+
+    //we move first
+    if (side == BLACK) {
+        //if no more moves after this one
+        if (listMoves(node0->board, BLACK).size() <= 0) {
+            return bestMove;
+        }
+        for (unsigned int j = 0; j < listMoves(node0->board, BLACK).size(); j++) {
+            node0->childrenMoves.push_back(listMoves(node0->board, BLACK)[j]);
+        }
+        nodesList.push_back(node0);    
+        for (unsigned int n = 0; n < (node0->childrenMoves).size(); n++) {
+            Node *node1 = new Node(node0->childrenMoves[n]);
+            node1->board = node0->board->copy();
+            node1->board->doMove(node1->move, BLACK);
+            if (listMoves(node1->board, WHITE).size() <= 0) {
+                maxScore = node0->board->score(node1->move, BLACK);
+                bestMove = node1->move;
+                nodesList.push_back(node1);
+            }
+            else {
+                for (unsigned int q = 0; q < listMoves(node1->board, WHITE).size(); q++) {
+                    node1->childrenMoves.push_back(listMoves(node1->board, WHITE)[q]);
+                    nodesList.push_back(node1);
+                }  
+                //their move
+                int branchScore = 1000000;
+                for (unsigned int r = 0; r < (node1->childrenMoves).size(); r++) {
+                    Node *node2 = new Node(node1->childrenMoves[r]);
+                    node2->board = node1->board->copy();
+                    node2->board->doMove(node2->move, WHITE);
+                    newScore = -1 * node1->board->score(node2->move, WHITE);
+                    if (newScore < branchScore){
+                        branchScore = newScore;
+                    }
+                }
+                if (branchScore > maxScore){
+                    maxScore = branchScore;
+                    bestMove = node1->move;
+                }    
+            }
+        }
+    }
+
+    else if (side == WHITE) {
+        //if no more moves after this one
+        if (listMoves(node0->board, WHITE).size() <= 0) {
+            return bestMove;
+        }
+        for (unsigned int j = 0; j < listMoves(node0->board, WHITE).size(); j++) {
+            node0->childrenMoves.push_back(listMoves(node0->board, WHITE)[j]);
+        }
+        nodesList.push_back(node0);    
+        for (unsigned int n = 0; n < (node0->childrenMoves).size(); n++) {
+            Node *node1 = new Node(node0->childrenMoves[n]);
+            node1->board = node0->board->copy();
+            node1->board->doMove(node1->move, WHITE);
+            if (listMoves(node1->board, BLACK).size() <= 0) {
+                maxScore = node0->board->score(node1->move, WHITE);
+                bestMove = node1->move;
+                nodesList.push_back(node1);
+            }
+            else {
+                for (unsigned int q = 0; q < listMoves(node1->board, BLACK).size(); q++) {
+                    node1->childrenMoves.push_back(listMoves(node1->board, BLACK)[q]);
+                    nodesList.push_back(node1);
+                }  
+                //their move
+                int branchScore = 1000000;
+                for (unsigned int r = 0; r < (node1->childrenMoves).size(); r++) {
+                    Node *node2 = new Node(node1->childrenMoves[r]);
+                    node2->board = node1->board->copy();
+                    node2->board->doMove(node2->move, BLACK);
+                    newScore = -1 * node1->board->score(node2->move, BLACK);
+                    if (newScore < branchScore){
+                        branchScore = newScore;
+                    }
+                }
+                if (branchScore > maxScore){
+                    maxScore = branchScore;
+                    bestMove = node1->move;
+                }    
+            }
+        }
+    }
+
+    B->doMove(bestMove, side);
+    
+    //delete stuff
+    /*for (unsigned int m = 0; m < nodesList.size(); m++) {
+        delete nodesList[nodesList.size() - m - 1]->board;
+        if (nodesList[nodesList.size() - m - 1]->childrenMoves.size() > 0) {
+            for (unsigned int x = 0; x < nodesList[nodesList.size() - m - 1]->childrenMoves.size(); x++) {
+                delete (nodesList[nodesList.size() - m - 1]->childrenMoves)[x];
+            }
+        }
+    }
+    for (unsigned int y = 0; y < nodesList.size(); y++) {
+        delete nodesList[y];
+    }*/
+
+    return bestMove;
+}
+
+//commented out all the nodesVector cuz idk y it doesn't like it 
+//also commented out hpp nodesVector
+Node *Player::alphaBetaMove(Node *node, int msLeft) {
+    // determine side of other
+    Side other;
+    if (side == BLACK){ 
+        other = WHITE;
+    }
+    else if (side == WHITE){
+        other = BLACK;
+    }
+
+    // if it reaches the bottom
+    if (node->level == 4 || listMoves(node->board, node->nodeSide).size() <= 0) {
+        //determine score
+        node->score = node->board->countBlack() - node->board->countWhite();
+        if (node->nodeSide == WHITE) {
+            node->score *= -1;
+        }
+        return node;
+    }
+    else {
+        // i don't think it needs childrenMoves but i'll keep it here until i finish 
+        // maybe delete later
+        for (unsigned int j = 0; j < listMoves(node->board, node->nodeSide).size(); j++) {
+            node->childrenMoves.push_back(listMoves(node->board, node->nodeSide)[j]);
+        }
+
+        // create new children moves and start recursion
+        if (node->alpha <= node->beta) {
+            for (unsigned int i = 0; i < node->childrenMoves.size(); i++) {
+                Node *node1 = new Node(node->childrenMoves[i]);
+                // determine nodeSide, level, and score
+                node1->board = node->board->copy();
+                node1->level = node->level + 1;
+                node1->alpha = node->alpha;
+                node1->beta = node->beta;
+                if (node->nodeSide == side) {
+                    node1->nodeSide = other;
+                    node1->score = 1e8;
+                }
+                else if (node->nodeSide == other) {
+                    node1->nodeSide = side;
+                    node1->score = -1e8;
+                }
+                node1->parent = node;
+                //nodesVector.push_back(node1);
+                Node *newNode = alphaBetaMove(node1, msLeft);
+
+                // starts going back up tree to determine new alpha/beta values
+                if (newNode->nodeSide == side) {
+                    if (newNode->score < newNode->parent->score) {
+                        newNode->parent->score = newNode->score;
+                        newNode->parent->bestMove = newNode->move;
+                    }
+                    if (newNode->score < newNode->beta) {
+                        newNode->parent->beta = newNode->score;
+                    }
+                }
+                else if (newNode->nodeSide == other) {
+                    if (newNode->score > newNode->parent->score) {
+                        newNode->parent->score = newNode->score;
+                        newNode->parent->bestMove = newNode->move;
+                    }
+                    if (newNode->score > newNode->alpha) {
+                        newNode->parent->alpha = newNode->score;
+                    }
+                }
+                return newNode;
+            }
+        }
+    }
+}
+
 
 
 /*
@@ -233,6 +422,7 @@ Move *Player::minimaxMove(Move *opponentsMove, Side side, int msLeft) {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
+    testingHeuristicMinimax = true;
 
     //record opponents move
     if (side == BLACK){
@@ -246,7 +436,19 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
 
     if (testingMinimax == true) {
-        return minimaxMove(opponentsMove, side, msLeft);
+        return minimaxMove(opponentsMove, msLeft);
+    }
+    else if (testingHeuristicMinimax == true) {
+        return minimaxHeuristicMove(opponentsMove, msLeft);
+    }
+    else if (runningAlphaBeta == true) {
+        Node *node0 = new Node(opponentsMove);
+        node0->board = B->copy();
+        node0->nodeSide = side;
+        //nodesVector.push_back(node0);
+        Move *bestMove = alphaBetaMove(node0, msLeft)->move;
+        B->doMove(bestMove, side);
+        return bestMove;
     }
 
     // do and return random move
