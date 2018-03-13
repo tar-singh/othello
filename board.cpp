@@ -529,7 +529,7 @@ bool Board::getCorner(int quadrant, Side side)
     {
         if (occupied(7, 7) && get(side, 7, 7))
         {
-            return true
+            return true;
         }
     }
     
@@ -722,7 +722,7 @@ int Board::getCreepingEdge(int X, int Y, Side side)
 bool Board::getLastEdgePiece(int X, int Y, bool creepingEdgeBool, Side side)
 {
     int count = 0;
-    if (creepingEdge)
+    if (creepingEdgeBool)
     {
         if (X == 0)
         {
