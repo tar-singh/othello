@@ -393,14 +393,14 @@ int Board::countFlipped(Move *m, Side side){
 
 int Board::betterScore(Move *m, Side side)
 {
-    int weightedBoard[8][8] = {{4, -2, 0, 0, 0, 0, -2 -4}, \
+    int weightedBoard[8][8] = {{4, -2, 0, 0, 0, 0, -2, 4}, \
                                {-2, -4, 0, 0, 0, 0, -4, -2}, \
                                {0, 0, 0, 0, 0, 0 , 0, 0}, \
                                {0, 0, 0, 0, 0, 0 , 0, 0}, \
                                {0, 0, 0, 0, 0, 0 , 0, 0}, \
                                {0, 0, 0, 0, 0, 0 , 0, 0}, \
                                {-2, -4, 0, 0, 0, 0, -4, -2}, \
-                               {4, -2, 0, 0, 0, 0, -2 -4}};
+                               {4, -2, 0, 0, 0, 0, -2, 4}};
     int X = m->getX();
     int Y = m->getY();
     int quadrant = getQuadrant(X, Y);
@@ -426,7 +426,7 @@ int Board::betterScore(Move *m, Side side)
             creepingEdgeBool = false;
             if (creepingEdge < 0)
             {
-                score -= -2;
+                score -= 2;
             }
         }
         else
@@ -446,7 +446,7 @@ int Board::betterScore(Move *m, Side side)
     {
         if (corner)
         {
-            score = 0;
+            score = 2;
         }
     }
 
@@ -454,6 +454,7 @@ int Board::betterScore(Move *m, Side side)
     {
         if (edge)
         {
+            score += 1;
             creepingEdge = getCreepingEdge(X, Y, side); // if part of edge that's creepin'
         
             if (creepingEdge < 3)
@@ -461,7 +462,7 @@ int Board::betterScore(Move *m, Side side)
                 creepingEdgeBool = false;
                 if (creepingEdge < 0)
                 {
-                    score -= -2;
+                    score -= 2;
                 }
             }
             else

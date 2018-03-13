@@ -37,13 +37,66 @@ Player::~Player() {
 
 int Player::frontierFlipped(Board *parentBoard, Board *currentBoard, Move *parentMove, Side moveSide) {
     int totalFrontierMoves = 0;
-    currentBoard->doMove(parentMove, moveSide);
     if (moveSide == WHITE) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (currentBoard->occupied(i, j)) {
                     bool isFrontier = false;
                     if (parentBoard->get(BLACK, i, j) && currentBoard->get(WHITE, i, j)) {
+                        if ((0 <= i - 1) && (i - 1 <= 8)) {
+                            if (currentBoard->occupied(i - 1, j) == false) {
+                                isFrontier = true;
+                            }
+                        }
+                        else if ((0 <= i + 1) && (i + 1 <= 8)) {
+                            if (currentBoard->occupied(i + 1, j) == false) {
+                                isFrontier = true;
+                            }
+                        }
+                        else if ((0 <= j - 1) && (j - 1<= 8)) {
+                            if (currentBoard->occupied(i, j - 1) == false) {
+                                isFrontier = true;
+                            }
+                        }
+                        else if ((0 <= j + 1) && (j + 1 <= 8)) {
+                            if (currentBoard->occupied(i, j + 1) == false) {
+                                isFrontier = true;
+                            }
+                        }
+                        else if ((0 <= i - 1) && (i - 1 <= 8) && (0 <= j - 1) && (j - 1<= 8)) {
+                            if (currentBoard->occupied(i - 1, j - 1) == false) {
+                                isFrontier = true;
+                            }
+                        }
+                        else if ((0 <= i - 1) && (i - 1 <= 8) && (0 <= j + 1) && (j + 1 <= 8)) {
+                            if (currentBoard->occupied(i - 1, j + 1) == false) {
+                                isFrontier = true;
+                            }
+                        }                                      
+                        else if ((0 <= i + 1) && (i + 1 <= 8) && (0 <= j - 1) && (j - 1 <= 8)) {
+                            if (currentBoard->occupied(i + 1, j - 1) == false) {
+                                isFrontier = true;
+                            }
+                        }            
+                        else if ((0 <= i + 1) && (i + 1 <= 8) && (0 <= j + 1) && (j + 1 <= 8)) {
+                            if (currentBoard->occupied(i + 1, j + 1) == false) {
+                                isFrontier = true;
+                            }
+                        }                             
+                    }
+                    if (isFrontier == true) {
+                        totalFrontierMoves += 1;
+                    }
+                }
+            }
+        }
+    }
+        else if (moveSide == BLACK) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (currentBoard->occupied(i, j)) {
+                    bool isFrontier = false;
+                    if (parentBoard->get(WHITE, i, j) && currentBoard->get(BLACK, i, j)) {
                         if ((0 <= i - 1) && (i - 1 <= 8)) {
                             if (currentBoard->occupied(i - 1, j) == false) {
                                 isFrontier = true;
@@ -415,9 +468,9 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
     }
 
     // if it reaches the bottom
-    if (node->level == 4 || listMoves(node->board, node->nodeSide).size() <= 0) {
+    if (node->level == 5 || listMoves(node->board, node->nodeSide).size() <= 0) {
         //determine score
-        node->score = node->parent->board->betterScore(node->move, node->parent->nodeSide) - frontierFlipped(node->parent->board, node->board, node->move, node->nodeSide);
+        node->score = node->parent->board->betterScore(node->move, node->parent->nodeSide) -  frontierFlipped(node->parent->board, node->board, node->move, node->nodeSide);
         if (node->parent->nodeSide == other) { //might be right might be wrong
             node->score = -1 * node->score;
         }
