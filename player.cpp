@@ -511,6 +511,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     else if (testingHeuristicMinimax == true) {
         return minimaxHeuristicMove(opponentsMove, msLeft);
     }
+
     else if (runningAlphaBeta == true) {
 
         Node *node0 = new Node(opponentsMove);
