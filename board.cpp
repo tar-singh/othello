@@ -417,11 +417,63 @@ int Board::betterScore(Move *m, Side side)
         if (corner)
         {
             score = 2;
+        }    
+        creepingEdge = getCreepingEdge(X, Y, side); // if part of edge that's creepin'
+        
+        if (creepingEdge < 3)
+        {
+            creepingEdgeBool = false;
+            if (creepingEdge < 0)
+            {
+                score -= -2;
+            }
         }
+        else
+        {
+            creepingEdgeBool = true;
+        }
+        
+        lastEdgePiece = getLastEdgePiece(X, Y, creepingEdgeBool, side); // if edge piece is last in edge (besides corners)
+            
+        if (lastEdgePiece)
+        {
+            score += 2;
+        }
+    }
+
+    else if (score == -4)
+    {
+        if (corner)
+        {
+            score = 0;
+        }
+    }
+
+    else if (score == 0)
+    {
         if (edge)
         {
-            creepingEdge = getCreepingEdge(X, Y, side); // if edge is a creepin' edge
-            lastEdgePiece = getLastEdgePiece(X, Y, creepingEdge, side); // if edge piece is last in edge (besides corners)
+            creepingEdge = getCreepingEdge(X, Y, side); // if part of edge that's creepin'
+        
+            if (creepingEdge < 3)
+            {
+                creepingEdgeBool = false;
+                if (creepingEdge < 0)
+                {
+                    score -= -2;
+                }
+            }
+            else
+            {
+                creepingEdgeBool = true;
+            }
+        
+            lastEdgePiece = getLastEdgePiece(X, Y, creepingEdgeBool, side); // if edge piece is last in edge (besides corners)
+            
+            if (lastEdgePiece)
+            {
+                score += 2;
+            }        
         }
     }
 
@@ -492,34 +544,181 @@ bool Board::getEdge(int X, int Y)
     return false;
 }
 
-bool Board::getCreepingEdge(int X, int Y, Side side)
+int Board::getCreepingEdge(int X, int Y, Side side)
 {
     int x = X;
     int y = Y;
     int count = 0;
+    bool other = false;
     if (X == 0)
     {
         while(onBoard(0, y - 1))
         {
-            if ()
+            if (!occupied(0, y - 1))
+            {
+                break;
+            }
+            else if (get(side, 0, y - 1))
+            {
+                count++;
+                y--;
+            }
+            else if (!get(side, 0, y - 1))
+            {
+                other = true;
+                count = -10;
+                break;
+            }
+        }
+        y = Y;
+        while(onBoard(0, y + 1) && !other)
+        {
+            if (!occupied(0, y + 1))
+            {
+                break;
+            }
+            else if (get(side, 0, y + 1))
+            {
+                count++;
+                y++;
+            }
+            else if (!get(side, 0, y + 1))
+            {
+                count = -10;
+                break;
+            }
         }
     }
     else if (Y == 0)
     {
-
+        while(onBoard(x - 1, 0))
+        {
+            if (!occupied(x - 1, 0))
+            {
+                break;
+            }
+            else if (get(side, x - 1, 0))
+            {
+                count++;
+                x--;
+            }
+            else if (!get(side, X - 1, 0))
+            {
+                other = true;
+                count = -10;
+                break;
+            }
+        }
+        x = X;
+        while(onBoard(x + 1, 0) && !other)
+        {
+            if (!occupied(x + 1, 0))
+            {
+                break;
+            }
+            else if (get(side, x + 1, 0))
+            {
+                count++;
+                x++;
+            }
+            else if (!get(side, x + 1, 0))
+            {
+                count = -10;
+                break;
+            }
+        }
     }
     else if (X == 7)
     {
-
+        while(onBoard(7, y - 1))
+        {
+            if (!occupied(7, y - 1))
+            {
+                break;
+            }
+            else if (get(side, 7, y - 1))
+            {
+                count++;
+                y--;
+            }
+            else if (!get(side, 7, y - 1))
+            {
+                other = true;
+                count = -10;
+                break;
+            }
+        }
+        y = Y;
+        while(onBoard(0, y + 1) && !other)
+        {
+            if (!occupied(7, y + 1))
+            {
+                break;
+            }
+            else if (get(side, 7, y + 1))
+            {
+                count++;
+                y++;
+            }
+            else if (!get(side, 7, y + 1))
+            {
+                count = -10;
+                break;
+            }
+        }
     }
     else if (Y == 7)
     {
-
+        while(onBoard(x - 1, 7))
+        {
+            if (!occupied(x - 1, 7))
+            {
+                break;
+            }
+            else if (get(side, x - 1, 7))
+            {
+                count++;
+                x--;
+            }
+            else if (!get(side, X - 1, 7))
+            {
+                other = true;
+                count = -10;
+                break;
+            }
+        }
+        x = X;
+        while(onBoard(x + 1, 7) && !other)
+        {
+            if (!occupied(x + 1, 7))
+            {
+                break;
+            }
+            else if (get(side, x + 1, 7))
+            {
+                count++;
+                x++;
+            }
+            else if (!get(side, x + 1, 7))
+            {
+                count = -10;
+                break;
+            }
+        }
     }
-    return false;
+
+    if (count < 0)
+    {
+        return 1;
+    }
+    else if (count >= 3)
+    {
+        return 3;
+    }
+    return 2;
 }
 
-bool Board::getLastEdgePiece(int X, int Y, bool creepingEdge, Side side)
+bool Board::getLastEdgePiece(int X, int Y, bool creepingEdgeBool, Side side)
 {
     int count = 0;
     if (creepingEdge)
@@ -570,8 +769,4 @@ bool Board::getLastEdgePiece(int X, int Y, bool creepingEdge, Side side)
         }
     }
     return false;
-}
-
-int Board::frontiersFlipped(Move *m, Side side) {
-    newBoard = 
 }
