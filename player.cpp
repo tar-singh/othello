@@ -468,7 +468,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
     }
 
     // if it reaches the bottom
-    if (node->level == 5 || listMoves(node->board, node->nodeSide).size() <= 0) {
+    if (node->level == 6 || listMoves(node->board, node->nodeSide).size() <= 0) {
         //determine score
         node->score = node->parent->board->betterScore(node->move, node->parent->nodeSide) -  frontierFlipped(node->parent->board, node->board, node->move, node->nodeSide);
         if (node->parent->nodeSide == other) { //might be right might be wrong
