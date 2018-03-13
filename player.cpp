@@ -403,12 +403,10 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
             std::cerr << "alpha: " << newNode->parent->alpha << std::endl;
             std::cerr << "beta: " << newNode->parent->beta << std::endl;*/
             if (node->alpha > node->beta) {
-                //std::cerr << "alpha > beta" << std::endl;
                 break;
             }
         }
     }
-    //std::cerr << "end of moves" << std::endl;
     return node;
 }
 
