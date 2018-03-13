@@ -16,11 +16,6 @@ private:
     bool get(Side side, int x, int y);
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
-
-    // unsure
-    struct weights{
-        int weightedBoard[8][8];
-
     }
 
 
@@ -40,6 +35,11 @@ public:
     int score(Move *m, Side side);
     int countFlipped(Move *m, Side side);
     int betterScore(Move *m, Side side);
+    int getQuadrant(int X, int Y);
+    bool getCorner(int quadrant, Side side);
+    bool getEdge(int X, int Y);
+    int getCreepingEdge(int X, int Y, Side side);
+    bool getLastEdgePiece(int X, int Y, bool creepingEdgeBool, Side side);
 };
 
 
