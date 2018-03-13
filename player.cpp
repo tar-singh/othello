@@ -365,7 +365,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                 Node *node1 = new Node(node->childrenMoves[i]);
                 // determine nodeSide, level, and score
                 node1->board = node->board->copy();
-                node1->board->doMove(node1->move, node1->nodeSide);
+                node1->board->doMove(node1->move, node->nodeSide);
                 node1->level = node->level + 1;
                 node1->alpha = node->alpha;
                 node1->beta = node->beta;
@@ -378,6 +378,13 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                     node1->score = -1e8;
                 }
                 node1->parent = node;
+                std::cerr << std::endl;
+                std::cerr << "another" << std::endl;
+                std::cerr << "node move: " << node1->move->getX() << "," << node1->move->getY() << std::endl;
+                std::cerr << "nodeSide: " << node1->nodeSide << std::endl;
+                std::cerr << "level: " << node1->level << std::endl;
+                std::cerr << "alpha: " << node1->alpha << std::endl;
+                std::cerr << "beta: " << node1->beta << std::endl;
                 nodesVector.push_back(node1);
                 Node *newNode = alphaBetaMove(node1, msLeft);
 
@@ -387,7 +394,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                         newNode->parent->score = newNode->score;
                         newNode->parent->bestMove = newNode->move;
                     }
-                    if (newNode->score <= newNode->beta) {
+                    if (newNode->score <= newNode->parent->beta) {
                         newNode->parent->beta = newNode->score;
                     }
                 }
@@ -396,7 +403,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                         newNode->parent->score = newNode->score;
                         newNode->parent->bestMove = newNode->move;
                     }
-                    if (newNode->score >= newNode->alpha) {
+                    if (newNode->score >= newNode->parent->alpha) {
                         newNode->parent->alpha = newNode->score; 
                     }
                 }
@@ -406,19 +413,20 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                 std::cerr << "node score: " << newNode->score << std::endl;
                 std::cerr << "node level: " << newNode->level << std::endl;
                 std::cerr << "node move: " << newNode->move->getX() << "," << newNode->move->getY() << std::endl;
+                std::cerr << "node alpha: " << newNode->alpha << std::endl;
+                std::cerr << "node beta: " << newNode->beta << std::endl;
                 std::cerr << std::endl;
                 std::cerr << "parent node side: " << newNode->parent->nodeSide << std::endl;
                 std::cerr << "parent node score: " << newNode->parent->score << std::endl;
                 std::cerr << "parent node level: " << newNode->parent->level << std::endl;
                 std::cerr << "parent node bestMove: " << newNode->parent->bestMove->getX() << "," <<newNode->parent->bestMove->getY() << std::endl;
-                if (newNode->alpha > newNode->beta) {
-                    break;
-                }
-                if (newNode->level == 0) {
-                    return newNode;
-                }
+                std::cerr << "alpha: " << newNode->parent->alpha << std::endl;
+                std::cerr << "beta: " << newNode->parent->beta << std::endl;
             }
         }
+    }
+    if (node->level == 0) {
+        return node;
     }
 }
 
@@ -464,7 +472,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         node0->board = B->copy();
         node0->nodeSide = side;
         nodesVector.push_back(node0);
-        Move *bestMove = alphaBetaMove(node0, msLeft)->move;
+        Move *bestMove = alphaBetaMove(node0, msLeft)->bestMove;
         B->doMove(bestMove, side);
         return bestMove;
     }
