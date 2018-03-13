@@ -417,7 +417,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
     // if it reaches the bottom
     if (node->level == 4 || listMoves(node->board, node->nodeSide).size() <= 0) {
         //determine score
-        node->score = node->parent->board->score(node->move, node->parent->nodeSide);
+        node->score = node->parent->board->betterScore(node->move, node->parent->nodeSide) - frontierFlipped(node->parent->board, node->board, node->move, node->nodeSide);
         if (node->parent->nodeSide == other) { //might be right might be wrong
             node->score = -1 * node->score;
         }
@@ -490,7 +490,9 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
-    runningAlphaBeta = true;
+    if (testingMinimax == true) {
+        runningAlphaBeta = true;
+    }
 
     //record opponents move
     if (side == BLACK){
@@ -502,14 +504,13 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (opponentsMove != nullptr){
         B->doMove(opponentsMove, other);
     }
-/*
+
     if (testingMinimax == true) {
         return minimaxMove(opponentsMove, msLeft);
     }
     else if (testingHeuristicMinimax == true) {
         return minimaxHeuristicMove(opponentsMove, msLeft);
     }
-    */
     else if (runningAlphaBeta == true) {
 
         Node *node0 = new Node(opponentsMove);
