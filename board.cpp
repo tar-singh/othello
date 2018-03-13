@@ -193,6 +193,36 @@ void Board::setBoard(char data[]) {
 int Board::score(Move *m, Side side){
     int X = m->getX();
     int Y = m->getY();
+    int score = 0;
+    Side realSide = side;
+    score = countFlipped(m, realSide);
+
+    // adds bonuses depending on position of board
+
+    if ((X == 1 && (Y == 1 || Y == 6)) || (X == 6 && (Y == 1 || Y == 6)))
+    {
+       score -= 3;
+    }
+
+    else if ((X == 0 && (Y == 0 || Y == 7)) || (X == 7 && (Y == 7 || Y == 0)))
+    {
+        score += 3;
+    }
+    else if ((X == 0 && (Y == 1 || Y == 6)) || (X == 1 && (Y == 0 || Y == 7)) || (X == 6 && (Y == 0 || Y == 7)) || (X == 7 && (Y == 1 || Y == 6)))
+    {
+        score -= 2;
+    }
+    else if (X == 0 || X == 7 || Y == 0 || Y == 7)
+    {
+        score += 2;
+    }
+
+    return score;
+}
+
+int Board::countFlipped(Move *m, Side side){
+    int X = m->getX();
+    int Y = m->getY();
     int x = X;
     int y = Y;
     int score = 1;
@@ -358,26 +388,178 @@ int Board::score(Move *m, Side side){
     X = x;
     Y = y;
 
-    // adds bonuses depending on position of board
+    return score;
+}
 
-    if ((X == 1 && (Y == 1 || Y == 6)) || (X == 6 && (Y == 1 || Y == 6)))
-    {
-       score -= 3;
-    }
+int Board::betterScore(Move *m, Side side)
+{
+    int X = m->getX();
+    int Y = m->getY();
+    int quadrant = getQuadrant(X, Y);
+    bool corner = getCorner(quadrant, side); // is the corner in the quadrant filled by same color
+    bool edge = getEdge(X, Y); // is it an edge piece
+    bool creepingEdge;
+    bool lastEdgePiece;
 
-    else if ((X == 0 && (Y == 0 || Y == 7)) || (X == 7 && (Y == 7 || Y == 0)))
+    // or whatever the name of the board is
+    int score = weightedBoard[X][Y];
+
+    if (score == -2) 
     {
-        score += 3;
-    }
-    else if ((X == 0 && (Y == 1 || Y == 6)) || (X == 1 && (Y == 0 || Y == 7)) || (X == 6 && (Y == 0 || Y == 7)) || (X == 7 && (Y == 1 || Y == 6)))
-    {
-        score -= 2;
-    }
-    else if (X == 0 || X == 7 || Y == 0 || Y == 7)
-    {
-        score += 2;
+        if (corner)
+        {
+            score = 2;
+        }
+        if (edge)
+        {
+            creepingEdge = getCreepingEdge(X, Y, side); // if edge is a creepin' edge
+            lastEdgePiece = getLastEdgePiece(X, Y, creepingEdge, side); // if edge piece is last in edge (besides corners)
+        }
     }
 
     return score;
 }
 
+// helper functions for betterScore
+int Board::getQuadrant(int X, int Y)
+{
+    if (X < 4 && Y < 4)
+    {
+        return 1;
+    }
+    else if (X < 4 && Y >= 4)
+    {
+        return 2;
+    }
+    else if (X >= 4 && Y < 4)
+    {
+        return 3;
+    }
+    else 
+    {
+        return 4;
+    }
+}
+
+bool Board::getCorner(int quadrant, Side side)
+{
+    if (quadrant == 1)
+    {
+        if (occupied(0, 0) && get(side, 0, 0))
+        {
+            return true;
+        }
+    }
+    else if (quadrant == 2)
+    {
+        if (occupied(7, 0) && get(side, 7, 0))
+        {
+            return true;
+        }
+    }
+    else if (quadrant == 3)
+    {
+        if (occupied(0, 7) && get(side, 0, 7))
+        {
+            return true;
+        }
+    }
+    else if (quadrant == 4)
+    {
+        if (occupied(7, 7) && get(side, 7, 7))
+        {
+            return true
+        }
+    }
+    
+    return false;
+}
+
+bool Board::getEdge(int X, int Y)
+{
+    if (X == 0 || Y == 0 || X == 7 || Y == 7)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Board::getCreepingEdge(int X, int Y, Side side)
+{
+    int x = X;
+    int y = Y;
+    int count = 0;
+    if (X == 0)
+    {
+        while(onBoard(0, y - 1))
+        {
+            if ()
+        }
+    }
+    else if (Y == 0)
+    {
+
+    }
+    else if (X == 7)
+    {
+
+    }
+    else if (Y == 7)
+    {
+
+    }
+    return false;
+}
+
+bool Board::getLastEdgePiece(int X, int Y, bool creepingEdge, Side side)
+{
+    int count = 0;
+    if (creepingEdge)
+    {
+        if (X == 0)
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                if (occupied(0, i) && get(side, 0, i))
+                {
+                    count++; 
+                }
+            }
+        }
+        else if (Y == 0)
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                if (occupied(i, 0) && get(side, i, 0))
+                {
+                    count++;
+                }
+            }
+        }
+        else if (X == 7)
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                if (occupied(7, i) && get(side, 7, i))
+                {
+                    count++;
+                }
+            }
+        }
+        else if (Y == 7)
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                if (occupied(i, 7) && get(side, i, 7))
+                {
+                    count++;
+                }
+            }
+        }
+        if (count == 5)
+        {
+            return true;
+        }
+    }
+    return false;
+}

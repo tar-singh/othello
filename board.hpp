@@ -17,6 +17,13 @@ private:
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
 
+    // unsure
+    struct weights{
+        int weightedBoard[8][8];
+
+    }
+
+
 public:
     Board();
     ~Board();
@@ -31,6 +38,8 @@ public:
     int countWhite();
     void setBoard(char data[]);
     int score(Move *m, Side side);
+    int countFlipped(Move *m, Side side);
+    int betterScore(Move *m, Side side);
 };
 
 
