@@ -393,6 +393,14 @@ int Board::countFlipped(Move *m, Side side){
 
 int Board::betterScore(Move *m, Side side)
 {
+    int weightedBoard[8][8] = {{4, -2, 0, 0, 0, 0, -2 -4}, \
+                               {-2, -4, 0, 0, 0, 0, -4, -2}, \
+                               {0, 0, 0, 0, 0, 0 , 0, 0}, \
+                               {0, 0, 0, 0, 0, 0 , 0, 0}, \
+                               {0, 0, 0, 0, 0, 0 , 0, 0}, \
+                               {0, 0, 0, 0, 0, 0 , 0, 0}, \
+                               {-2, -4, 0, 0, 0, 0, -4, -2}, \
+                               {4, -2, 0, 0, 0, 0, -2 -4}};
     int X = m->getX();
     int Y = m->getY();
     int quadrant = getQuadrant(X, Y);
@@ -763,4 +771,3 @@ bool Board::getLastEdgePiece(int X, int Y, bool creepingEdgeBool, Side side)
     }
     return false;
 }
-
