@@ -457,18 +457,19 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
         node->level = node->parent->level + 1;
         node->alpha = node->parent->alpha;
         node->beta = node->parent->beta;
-        /*std::cerr << std::endl;
+
+        std::cerr << std::endl;
         std::cerr << "another" << std::endl;
         std::cerr << "node move: " << node->move->getX() << "," << node->move->getY() << std::endl;
         std::cerr << "nodeSide: " << node->nodeSide << std::endl;
         std::cerr << "score: " << node->score << std::endl;
         std::cerr << "level: " << node->level << std::endl;
         std::cerr << "alpha: " << node->alpha << std::endl;
-        std::cerr << "beta: " << node->beta << std::endl;*/
+        std::cerr << "beta: " << node->beta << std::endl;
     }
 
     // if it reaches the bottom
-    if (node->level == 6 || listMoves(node->board, node->nodeSide).size() <= 0) {
+    if (node->level == 4 || listMoves(node->board, node->nodeSide).size() <= 0) {
         //determine score
         node->score = node->parent->board->betterScore(node->move, node->parent->nodeSide) -  frontierFlipped(node->parent->board, node->board, node->move, node->nodeSide);
         if (node->parent->nodeSide == other) { //might be right might be wrong
@@ -511,14 +512,14 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                     newNode->parent->alpha = newNode->score; 
                 }
             }
-            /*std::cerr << std::endl;
+            std::cerr << std::endl;
             std::cerr << "set parent" << std::endl;
             std::cerr << "parent node side: " << newNode->parent->nodeSide << std::endl;
             std::cerr << "parent node score: " << newNode->parent->score << std::endl;
             std::cerr << "parent node level: " << newNode->parent->level << std::endl;
             std::cerr << "parent node bestMove: " << newNode->parent->bestMove->getX() << "," <<newNode->parent->bestMove->getY() << std::endl;
             std::cerr << "alpha: " << newNode->parent->alpha << std::endl;
-            std::cerr << "beta: " << newNode->parent->beta << std::endl;*/
+            std::cerr << "beta: " << newNode->parent->beta << std::endl;
             if (node->alpha > node->beta) {
                 break;
             }
@@ -544,7 +545,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
     runningAlphaBeta = true;
-    if (testingMinimax == true) {
+    if (testingMinimax == false) {
         runningAlphaBeta = true;
     }
 
@@ -591,7 +592,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
     // do and return basic heuristic move
     // comment out basicHeuristicMove to run random move
-    return basicHeuristicMove(side, msLeft);
+    //return basicHeuristicMove(side, msLeft);
 
 }
 
