@@ -203,7 +203,7 @@ Move *Player::minimaxMove(Move *opponentsMove, int msLeft) {
     
     //delete stuff
     for (unsigned int m = 0; m < nodesList.size(); m++) {
-        delete nodesList[nodesList.size() - m - 1];
+        delete nodesList[m];
     }
 
     return bestMove;
@@ -309,15 +309,7 @@ Move *Player::minimaxHeuristicMove(Move *opponentsMove, int msLeft) {
     
     //delete stuff
     /*for (unsigned int m = 0; m < nodesList.size(); m++) {
-        delete nodesList[nodesList.size() - m - 1]->board;
-        if (nodesList[nodesList.size() - m - 1]->childrenMoves.size() > 0) {
-            for (unsigned int x = 0; x < nodesList[nodesList.size() - m - 1]->childrenMoves.size(); x++) {
-                delete (nodesList[nodesList.size() - m - 1]->childrenMoves)[x];
-            }
-        }
-    }
-    for (unsigned int y = 0; y < nodesList.size(); y++) {
-        delete nodesList[y];
+        delete nodesList[nodesList.size() - m - 1];
     }*/
 
     return bestMove;
