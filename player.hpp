@@ -45,7 +45,7 @@ public:
     Move *minimaxHeuristicMove(Move *opponentsMove, int msLeft);
     vector<Move*> listMoves(Board * board, Side side);
     Node *alphaBetaMove(Node *node, int msLeft);
-    int frontierFlipped(Board *parentBoard, Move *parentMove, Side *moveSide);
+    int frontierFlipped(Board *parentBoard, Board *currentBoard, Move *parentMove, Side moveSide);
 
 
 

@@ -35,9 +35,8 @@ Player::~Player() {
     delete B;
 }
 
-int Player::frontierFlipped(Board *parentBoard, Move *parentMove, Side *moveSide) {
+int Player::frontierFlipped(Board *parentBoard, Board *currentBoard, Move *parentMove, Side moveSide) {
     int totalFrontierMoves = 0;
-    Board *currentBoard = parentBoard->copy();
     currentBoard->doMove(parentMove, moveSide);
     if (moveSide == WHITE) {
         for (int i = 0; i < 8; i++) {
@@ -45,48 +44,48 @@ int Player::frontierFlipped(Board *parentBoard, Move *parentMove, Side *moveSide
                 if (currentBoard->occupied(i, j)) {
                     bool isFrontier = false;
                     if (parentBoard->get(BLACK, i, j) && currentBoard->get(WHITE, i, j)) {
-                        if (0 <= i - 1 <= 8) {
+                        if ((0 <= i - 1) && (i - 1 <= 8)) {
                             if (currentBoard->occupied(i - 1, j) == false) {
                                 isFrontier = true;
                             }
                         }
-                        else if (0 <= i + 1 <= 8) {
+                        else if ((0 <= i + 1) && (i + 1 <= 8)) {
                             if (currentBoard->occupied(i + 1, j) == false) {
                                 isFrontier = true;
                             }
                         }
-                        else if (0 <= j - 1 <= 8) {
+                        else if ((0 <= j - 1) && (j - 1<= 8)) {
                             if (currentBoard->occupied(i, j - 1) == false) {
                                 isFrontier = true;
                             }
                         }
-                        else if (0 <= j + 1 <= 8) {
+                        else if ((0 <= j + 1) && (j + 1 <= 8)) {
                             if (currentBoard->occupied(i, j + 1) == false) {
                                 isFrontier = true;
                             }
                         }
-                        else if (0 <= i - 1 <= 8 && 0 <= j - 1 <= 8) {
+                        else if ((0 <= i - 1) && (i - 1 <= 8) && (0 <= j - 1) && (j - 1<= 8)) {
                             if (currentBoard->occupied(i - 1, j - 1) == false) {
                                 isFrontier = true;
                             }
                         }
-                        else if (0 <= i - 1 <= 8 && 0 <= j + 1 <= 8) {
+                        else if ((0 <= i - 1) && (i - 1 <= 8) && (0 <= j + 1) && (j + 1 <= 8)) {
                             if (currentBoard->occupied(i - 1, j + 1) == false) {
                                 isFrontier = true;
                             }
                         }                                      
-                        else if (0 <= i + 1 <= 8 && 0 <= j - 1 <= 8) {
-                            if (currentBoard->occupied(i - 1, j - 1) == false) {
+                        else if ((0 <= i + 1) && (i + 1 <= 8) && (0 <= j - 1) && (j - 1 <= 8)) {
+                            if (currentBoard->occupied(i + 1, j - 1) == false) {
                                 isFrontier = true;
                             }
                         }            
-                        else if (0 <= i + 1 <= 8 && 0 <= j + 1 <= 8) {
-                            if (currentBoard->occupied(i - 1, j - 1) == false) {
+                        else if ((0 <= i + 1) && (i + 1 <= 8) && (0 <= j + 1) && (j + 1 <= 8)) {
+                            if (currentBoard->occupied(i + 1, j + 1) == false) {
                                 isFrontier = true;
                             }
                         }                             
                     }
-                    if (isFronter = true) {
+                    if (isFrontier == true) {
                         totalFrontierMoves += 1;
                     }
                 }
