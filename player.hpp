@@ -14,8 +14,12 @@ public:
 	Node(Move *move) {
 		this->move = move;
 	};
+	~Node() {
+		delete board;
+		delete move;
+	};
     Board *board = nullptr;
-    Move * move;
+    Move *move;
     vector<Move*> childrenMoves;
     int alpha = -1e8;
     int beta = 1e8;
