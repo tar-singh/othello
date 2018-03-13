@@ -343,86 +343,91 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
         other = BLACK;
     }
 
+    if (node != nodesVector[0]) {
+        if (node->parent->nodeSide == side) {
+            node->nodeSide = other;
+            node->score = 1e8;
+        }
+        else if (node->parent->nodeSide == other) {
+            node->nodeSide = side;
+            node->score = -1e8;
+        }
+        node->board = node->parent->board->copy();
+        node->board->doMove(node->move, node->parent->nodeSide);
+        node->level = node->parent->level + 1;
+        node->alpha = node->parent->alpha;
+        node->beta = node->parent->beta;
+    }
+
     // if it reaches the bottom
     if (node->level == 4 || listMoves(node->board, node->nodeSide).size() <= 0) {
         //determine score
         node->score = node->board->countBlack() - node->board->countWhite();
         if (node->nodeSide == WHITE) {
-            node->score *= -1;
+            node->score = -1 * node->score;
         }
+        std::cerr << std::endl;
+        std::cerr << "node score: " << node->score << std::endl;
+        std::cerr << std::endl;
         return node;
     }
-    else {
+    
         // i don't think it needs childrenMoves but i'll keep it here until i finish 
         // maybe delete later
-        for (unsigned int j = 0; j < listMoves(node->board, node->nodeSide).size(); j++) {
-            node->childrenMoves.push_back(listMoves(node->board, node->nodeSide)[j]);
-        }
+    for (unsigned int j = 0; j < listMoves(node->board, node->nodeSide).size(); j++) {
+        node->childrenMoves.push_back(listMoves(node->board, node->nodeSide)[j]);
+    }
 
-        // create new children moves and start recursion
-        if (node->alpha <= node->beta) {
-            for (unsigned int i = 0; i < node->childrenMoves.size(); i++) {
-                Node *node1 = new Node(node->childrenMoves[i]);
-                // determine nodeSide, level, and score
-                node1->board = node->board->copy();
-                node1->board->doMove(node1->move, node->nodeSide);
-                node1->level = node->level + 1;
-                node1->alpha = node->alpha;
-                node1->beta = node->beta;
-                if (node->nodeSide == side) {
-                    node1->nodeSide = other;
-                    node1->score = 1e8;
-                }
-                else if (node->nodeSide == other) {
-                    node1->nodeSide = side;
-                    node1->score = -1e8;
-                }
-                node1->parent = node;
-                std::cerr << std::endl;
-                std::cerr << "another" << std::endl;
-                std::cerr << "node move: " << node1->move->getX() << "," << node1->move->getY() << std::endl;
-                std::cerr << "nodeSide: " << node1->nodeSide << std::endl;
-                std::cerr << "level: " << node1->level << std::endl;
-                std::cerr << "alpha: " << node1->alpha << std::endl;
-                std::cerr << "beta: " << node1->beta << std::endl;
-                nodesVector.push_back(node1);
-                Node *newNode = alphaBetaMove(node1, msLeft);
+    // create new children moves and start recursion
+    if (node->alpha <= node->beta) {
+        for (unsigned int i = 0; i < node->childrenMoves.size(); i++) {
+            Node *node1 = new Node(node->childrenMoves[i]);
+            // determine nodeSide, level, and score
+            node1->parent = node;
+            std::cerr << std::endl;
+            std::cerr << "another" << std::endl;
+            std::cerr << "node move: " << node1->move->getX() << "," << node1->move->getY() << std::endl;
+            std::cerr << "nodeSide: " << node1->nodeSide << std::endl;
+            std::cerr << "level: " << node1->level << std::endl;
+            std::cerr << "alpha: " << node1->alpha << std::endl;
+            std::cerr << "beta: " << node1->beta << std::endl;
+            nodesVector.push_back(node1);
+            Node *newNode = alphaBetaMove(node1, msLeft);
 
-                // starts going back up tree to determine new alpha/beta values
-                if (newNode->nodeSide == side) {
-                    if (newNode->score <= newNode->parent->score) {
-                        newNode->parent->score = newNode->score;
-                        newNode->parent->bestMove = newNode->move;
-                    }
-                    if (newNode->score <= newNode->parent->beta) {
-                        newNode->parent->beta = newNode->score;
-                    }
+            // starts going back up tree to determine new alpha/beta values
+            if (newNode->nodeSide == side) {
+                if (newNode->score <= newNode->parent->score) {
+                    newNode->parent->score = newNode->score;
+                    newNode->parent->bestMove = newNode->move;
                 }
-                else if (newNode->nodeSide == other) {
-                    if (newNode->score >= newNode->parent->score) {
-                        newNode->parent->score = newNode->score;
-                        newNode->parent->bestMove = newNode->move;
-                    }
-                    if (newNode->score >= newNode->parent->alpha) {
-                        newNode->parent->alpha = newNode->score; 
-                    }
+                if (newNode->score <= newNode->parent->beta) {
+                    newNode->parent->beta = newNode->score;
                 }
-                std::cerr << std::endl;
-                std::cerr << "new set" << std::endl;
-                std::cerr << "node side: " << newNode->nodeSide << std::endl;
-                std::cerr << "node score: " << newNode->score << std::endl;
-                std::cerr << "node level: " << newNode->level << std::endl;
-                std::cerr << "node move: " << newNode->move->getX() << "," << newNode->move->getY() << std::endl;
-                std::cerr << "node alpha: " << newNode->alpha << std::endl;
-                std::cerr << "node beta: " << newNode->beta << std::endl;
-                std::cerr << std::endl;
-                std::cerr << "parent node side: " << newNode->parent->nodeSide << std::endl;
-                std::cerr << "parent node score: " << newNode->parent->score << std::endl;
-                std::cerr << "parent node level: " << newNode->parent->level << std::endl;
-                std::cerr << "parent node bestMove: " << newNode->parent->bestMove->getX() << "," <<newNode->parent->bestMove->getY() << std::endl;
-                std::cerr << "alpha: " << newNode->parent->alpha << std::endl;
-                std::cerr << "beta: " << newNode->parent->beta << std::endl;
             }
+            else if (newNode->nodeSide == other) {
+                if (newNode->score >= newNode->parent->score) {
+                    newNode->parent->score = newNode->score;
+                    newNode->parent->bestMove = newNode->move;
+                }
+                if (newNode->score >= newNode->parent->alpha) {
+                    newNode->parent->alpha = newNode->score; 
+                }
+            }
+            std::cerr << std::endl;
+            std::cerr << "new set" << std::endl;
+            std::cerr << "node side: " << newNode->nodeSide << std::endl;
+            std::cerr << "node score: " << newNode->score << std::endl;
+            std::cerr << "node level: " << newNode->level << std::endl;
+            std::cerr << "node move: " << newNode->move->getX() << "," << newNode->move->getY() << std::endl;
+            std::cerr << "node alpha: " << newNode->alpha << std::endl;
+            std::cerr << "node beta: " << newNode->beta << std::endl;
+            std::cerr << std::endl;
+            std::cerr << "parent node side: " << newNode->parent->nodeSide << std::endl;
+            std::cerr << "parent node score: " << newNode->parent->score << std::endl;
+            std::cerr << "parent node level: " << newNode->parent->level << std::endl;
+            std::cerr << "parent node bestMove: " << newNode->parent->bestMove->getX() << "," <<newNode->parent->bestMove->getY() << std::endl;
+            std::cerr << "alpha: " << newNode->parent->alpha << std::endl;
+            std::cerr << "beta: " << newNode->parent->beta << std::endl;
         }
     }
     if (node->level == 0) {
