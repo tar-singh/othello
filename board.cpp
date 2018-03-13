@@ -398,7 +398,8 @@ int Board::betterScore(Move *m, Side side)
     int quadrant = getQuadrant(X, Y);
     bool corner = getCorner(quadrant, side); // is the corner in the quadrant filled by same color
     bool edge = getEdge(X, Y); // is it an edge piece
-    bool creepingEdge;
+    int creepingEdge;
+    bool creepingEdgeBool;
     bool lastEdgePiece;
 
     // or whatever the name of the board is
