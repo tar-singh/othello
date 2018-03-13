@@ -5,3 +5,4 @@ See [assignment9_part1.html](http://htmlpreview.github.io/?https://github.com/ca
 
 bot that can play othello
 
+see README.txt
