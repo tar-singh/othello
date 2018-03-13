@@ -490,6 +490,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
+    runningAlphaBeta = true;
     if (testingMinimax == true) {
         runningAlphaBeta = true;
     }
