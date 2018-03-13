@@ -503,14 +503,14 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (opponentsMove != nullptr){
         B->doMove(opponentsMove, other);
     }
-/*
+
     if (testingMinimax == true) {
         return minimaxMove(opponentsMove, msLeft);
     }
     else if (testingHeuristicMinimax == true) {
         return minimaxHeuristicMove(opponentsMove, msLeft);
     }
-    */
+
     else if (runningAlphaBeta == true) {
 
         Node *node0 = new Node(opponentsMove);
