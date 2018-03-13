@@ -206,7 +206,7 @@ Move *Player::minimaxMove(Move *opponentsMove, int msLeft) {
     
     //delete stuff
     for (unsigned int m = 0; m < nodesList.size(); m++) {
-        delete nodesList[m];
+        nodesList.pop_back();
     }
 
     return bestMove;
@@ -226,7 +226,7 @@ Move *Player::minimaxHeuristicMove(Move *opponentsMove, int msLeft) {
     //we move first
     if (side == BLACK) {
         //if no more moves after this one
-        if (listMoves(node0->board, BLACK).size() <= 0) {
+        if (listMoves(node0->board, BLACK).size() <= 0) {  
             return bestMove;
         }
         for (unsigned int j = 0; j < listMoves(node0->board, BLACK).size(); j++) {
@@ -311,9 +311,9 @@ Move *Player::minimaxHeuristicMove(Move *opponentsMove, int msLeft) {
     B->doMove(bestMove, side);
     
     //delete stuff
-    /*for (unsigned int m = 0; m < nodesList.size(); m++) {
-        delete nodesList[nodesList.size() - m - 1];
-    }*/
+    for (unsigned int m = 0; m < nodesList.size(); m++) {
+        nodesList.pop_back();
+    }
 
     return bestMove;
 }
@@ -329,8 +329,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
     else if (side == WHITE){
         other = BLACK;
     }
-
-    if (node != nodesVector[0]) {
+    if (node->parent != nullptr) {
         if (node->parent->nodeSide == side) {
             node->nodeSide = other;
             node->score = 1e8;
@@ -344,31 +343,27 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
         node->level = node->parent->level + 1;
         node->alpha = node->parent->alpha;
         node->beta = node->parent->beta;
-        std::cerr << std::endl;
+        /*std::cerr << std::endl;
         std::cerr << "another" << std::endl;
         std::cerr << "node move: " << node->move->getX() << "," << node->move->getY() << std::endl;
         std::cerr << "nodeSide: " << node->nodeSide << std::endl;
         std::cerr << "score: " << node->score << std::endl;
         std::cerr << "level: " << node->level << std::endl;
         std::cerr << "alpha: " << node->alpha << std::endl;
-        std::cerr << "beta: " << node->beta << std::endl;
+        std::cerr << "beta: " << node->beta << std::endl;*/
     }
 
     // if it reaches the bottom
-    if (node->level == 2 || listMoves(node->board, node->nodeSide).size() <= 0) {
+    if (node->level == 4 || listMoves(node->board, node->nodeSide).size() <= 0) {
         //determine score
-        node->score = node->board->countBlack() - node->board->countWhite();
-        if (side == WHITE) { //might be right might be wrong
+        node->score = node->parent->board->score(node->move, node->parent->nodeSide);
+        if (node->parent->nodeSide == other) { //might be right might be wrong
             node->score = -1 * node->score;
         }
-        std::cerr << std::endl;
-        std::cerr << "node score: " << node->score << std::endl;
-        std::cerr << std::endl;
+        //std::cerr << "node score: " << node->score << std::endl;
         return node;
     }
-    
-        // i don't think it needs childrenMoves but i'll keep it here until i finish 
-        // maybe delete later
+
     for (unsigned int j = 0; j < listMoves(node->board, node->nodeSide).size(); j++) {
         node->childrenMoves.push_back(listMoves(node->board, node->nodeSide)[j]);
     }
@@ -402,21 +397,19 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
                     newNode->parent->alpha = newNode->score; 
                 }
             }
-            std::cerr << std::endl;
+            /*std::cerr << std::endl;
             std::cerr << "set parent" << std::endl;
             std::cerr << "parent node side: " << newNode->parent->nodeSide << std::endl;
             std::cerr << "parent node score: " << newNode->parent->score << std::endl;
             std::cerr << "parent node level: " << newNode->parent->level << std::endl;
             std::cerr << "parent node bestMove: " << newNode->parent->bestMove->getX() << "," <<newNode->parent->bestMove->getY() << std::endl;
             std::cerr << "alpha: " << newNode->parent->alpha << std::endl;
-            std::cerr << "beta: " << newNode->parent->beta << std::endl;
+            std::cerr << "beta: " << newNode->parent->beta << std::endl;*/
             if (node->alpha > node->beta) {
-                std::cerr << "alpha > beta" << std::endl;
                 break;
             }
         }
     }
-    std::cerr << "end of moves" << std::endl;
     return node;
 }
 
@@ -439,7 +432,7 @@ Node *Player::alphaBetaMove(Node *node, int msLeft) {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Side other;
-    testingMinimax = true;
+    runningAlphaBeta = true;
 
     //record opponents move
     if (side == BLACK){
@@ -459,17 +452,22 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         return minimaxHeuristicMove(opponentsMove, msLeft);
     }
     else if (runningAlphaBeta == true) {
+
         Node *node0 = new Node(opponentsMove);
         node0->board = B->copy();
         node0->nodeSide = side;
         nodesVector.push_back(node0);
         if (listMoves(node0->board, side).size() <= 0) {
-            B->doMove(nullptr, side);
             return nullptr;
         }
-        Move *bestMove = alphaBetaMove(node0, msLeft)->bestMove;
-        B->doMove(bestMove, side);
-        return bestMove;
+        else {
+            Move *bestMove = alphaBetaMove(node0, msLeft)->bestMove;
+            B->doMove(bestMove, side);
+            for (unsigned int y = 0; y < nodesVector.size(); y++) {
+                nodesVector.pop_back();
+            }
+            return bestMove;
+        }
     }
 
     // do and return random move
@@ -478,7 +476,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
     // do and return basic heuristic move
     // comment out basicHeuristicMove to run random move
-    //oreturn basicHeuristicMove(side, msLeft);
+    return basicHeuristicMove(side, msLeft);
 
 }
 
